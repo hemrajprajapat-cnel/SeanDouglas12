@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:io';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:best_flutter_ui_templates/api/api.dart';
 import 'package:best_flutter_ui_templates/comman/custome_dialog.dart';
 import 'package:best_flutter_ui_templates/groups/home_design_course.dart';
@@ -48,8 +49,7 @@ class _Discussions extends State<Discussions> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     var user_id = prefs.getInt('isUserId');
-    print(group);
-    print(user_id);
+
     setState(() {
       isLoading = true;
     });
@@ -474,36 +474,46 @@ class _Discussions extends State<Discussions> {
                               padding: const EdgeInsets.all(8.0),
                               child: Row(
                                 children: [
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  CircleAvatar(
-                                    radius: 20,
-                                    backgroundImage: NetworkImage(
-                                      discussions.user_image.toString(),
+                                  Flexible(
+                                    flex: 1,
+                                    child: CircleAvatar(
+                                      radius: 20,
+                                      backgroundImage: NetworkImage(
+                                        discussions.user_image.toString(),
+                                      ),
                                     ),
                                   ),
                                   SizedBox(
-                                    width: 20,
+                                    width: 10,
                                   ),
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        " ${discussions.user_name}",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w600,
-                                          color: Color(0xff073278),
-                                        ),
-                                      ),
-                                      Text(
-                                        " ${discussions.total_member}",
-                                        style: TextStyle(
+                                  Flexible(
+                                    flex: 3,
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          " ${discussions.title}",
+                                          style: TextStyle(
                                             fontWeight: FontWeight.w600,
-                                            color: Color(0xff073278)),
-                                      ),
-                                    ],
+                                            color: Color(0xff073278),
+                                            fontSize: 15,
+                                          ),
+                                        ),
+                                        AutoSizeText(
+                                          "${discussions.user_name} replied ${discussions.date_recorded}, ${discussions.total_member} members",
+                                          minFontSize: 12,
+                                          maxLines: 2,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w300,
+                                            color:
+                                                Color.fromARGB(255, 87, 91, 97),
+                                            height: 1.2,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ],
                               ),

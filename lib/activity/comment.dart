@@ -4,6 +4,7 @@ import 'package:best_flutter_ui_templates/api/api.dart';
 import 'package:best_flutter_ui_templates/comman/custome_dialog.dart';
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'design_course_app_theme.dart';
 import 'package:http/http.dart' as http;
@@ -93,9 +94,7 @@ class _Comment extends State<Comment> {
                   "${tempActivityComment[i].comment_owner_name}",
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                subtitle: Text(
-                  "${tempActivityComment[i].comment_content}",
-                ),
+                subtitle: Html(data: tempActivityComment[i].comment_content),
               ),
             )
         ],

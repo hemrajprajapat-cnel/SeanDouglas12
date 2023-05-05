@@ -104,23 +104,23 @@ class _Profile extends State<Profile> with TickerProviderStateMixin {
                                             ],
                                           ),
                                         ),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    Editprofile(),
-                                              ),
-                                            );
-                                          },
-                                          child: Text(
-                                            "Edit",
-                                          ),
-                                          style: ElevatedButton.styleFrom(
-                                            primary: Color(0xff66C23D),
-                                          ),
-                                        ),
+                                        // ElevatedButton(
+                                        //   onPressed: () {
+                                        //     Navigator.push(
+                                        //       context,
+                                        //       MaterialPageRoute(
+                                        //         builder: (context) =>
+                                        //             Editprofile(),
+                                        //       ),
+                                        //     );
+                                        //   },
+                                        //   child: Text(
+                                        //     "Edit",
+                                        //   ),
+                                        //   style: ElevatedButton.styleFrom(
+                                        //     primary: Color(0xff66C23D),
+                                        //   ),
+                                        // ),
                                       ],
                                     ),
                                   ),

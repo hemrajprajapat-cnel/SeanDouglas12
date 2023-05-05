@@ -13,7 +13,6 @@ import 'package:sticky_headers/sticky_headers/widget.dart';
 import 'design_course_app_theme.dart';
 import 'package:http/http.dart' as http;
 
-
 class DesignCourseHomeScreen extends StatefulWidget {
   @override
   _DesignCourseHomeScreenState createState() => _DesignCourseHomeScreenState();
@@ -50,16 +49,16 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
   List<ActivityPostList> tempActivityList = [];
 
   Future<void> activityPostList(BuildContext context, page) async {
+    print("object");
     isLoading = true;
     final url = baseUrl + ApiEndPoints().activityPostList;
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    var user_id = prefs.getInt('isUserId');
+    var userId = prefs.getInt('isUserId');
+    var response = await http.get(Uri.parse("$url&user_id=$userId&page=$page"));
 
-    var response =
-        await http.get(Uri.parse("$url&user_id=$user_id&page=$page"));
     isLoading = false;
 
-    bool isLiked = true;
+    // bool isLiked = true;
 
     if (response.statusCode == 200) {
       List<ActivityPostListResponse> activityPostListResponse = [];
@@ -108,29 +107,27 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
         color: DesignCourseAppTheme.nearlyWhite,
         child: Scaffold(
             backgroundColor: Colors.transparent,
-            body: Column(
-                children: <Widget>[
-                  Expanded(
-                      child: SingleChildScrollView(
-                    controller: scrollController,
-                    child: Column(
-                        children: <Widget>[
-                          getAppBarUI(),
-                          StickyHeader(
-                            header: Container(
-                              child: getSearchBarUI(),
-                            ),
-                            content: Container(
-                              child: Column(children: <Widget>[
-                                getCategoryUI(),
-                                getPopularCourseUI(),
-                              ]),
-                            ),
-                          )
-                        ]),
-                  )),
-                  // ),
-                ])));
+            body: Column(children: <Widget>[
+              Expanded(
+                  child: SingleChildScrollView(
+                controller: scrollController,
+                child: Column(children: <Widget>[
+                  getAppBarUI(),
+                  StickyHeader(
+                    header: Container(
+                      child: getSearchBarUI(),
+                    ),
+                    content: Container(
+                      child: Column(children: <Widget>[
+                        getCategoryUI(),
+                        getPopularCourseUI(),
+                      ]),
+                    ),
+                  )
+                ]),
+              )),
+              // ),
+            ])));
   }
 
   Widget PopularCourseListView() {
@@ -166,7 +163,6 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                   RegExp exp =
                       RegExp(r"<[^>]*>", multiLine: true, caseSensitive: true);
                   String content = activityList.content!.replaceAll(exp, '');
-                  bool? isLiked = activityList.like_c_user == true;
 
                   return AnimatedBuilder(
                     animation: animationController!,
@@ -285,38 +281,30 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                                               IconButton(
                                                 onPressed: () async {
                                                   if (_isLiked) {
-                                                    _isLiked = false;
-                                                    await activityLikePostList(
-                                                      context,
-                                                      _isLiked,
-                                                      activityList.id,
-                                                    );
+                                                    setState(() {
+                                                      _isLiked = false;
+                                                      activityLikePostList(
+                                                        context,
+                                                        activityList.id,
+                                                      );
+                                                    });
                                                   } else {
-                                                    _isLiked = true;
-                                                    await activityLikePostList(
-                                                      context,
-                                                      _isLiked,
-                                                      activityList.id,
-                                                    );
+                                                    setState(() {
+                                                      _isLiked = true;
+                                                      activityLikePostList(
+                                                        context,
+                                                        activityList.id,
+                                                      );
+                                                    });
                                                   }
-                                                  setState(() {
-                                                    activityList.like_c_user =
-                                                        activityList
-                                                            .like_c_user;
-                                                  });
                                                 },
-                                                icon: activityList
-                                                            .like_c_user ==
-                                                        true
-                                                    ? Icon(
-                                                        Icons.favorite,
-                                                        color: Colors.red,
-                                                      )
-                                                    : Icon(
-                                                        Icons.favorite,
-                                                        color:
-                                                            Color(0xff073278),
-                                                      ),
+                                                icon: Icon(
+                                                  Icons.favorite,
+                                                  color:
+                                                      activityList.like_c_user!
+                                                          ? Colors.red
+                                                          : Color(0xff073278),
+                                                ),
                                                 iconSize: 30.0,
                                               ),
                                               IconButton(
@@ -347,15 +335,18 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                                           ),
                                           Row(
                                             children: [
-                                              Padding(
-                                                padding:
-                                                    EdgeInsets.only(left: 15),
-                                                child: Text(
-                                                  "${activityList.like_count}",
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: 12,
-                                                    color: Color(0xff073278),
+                                              Flexible(
+                                                child: Padding(
+                                                  padding:
+                                                      EdgeInsets.only(left: 15),
+                                                  child: Text(
+                                                    "${activityList.like_count}",
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontSize: 12,
+                                                      color: Color(0xff073278),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
@@ -400,8 +391,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            PopularCourseListView(
-                ),
+            PopularCourseListView(),
           ],
         ),
       ),
@@ -707,31 +697,32 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
       ),
     );
   }
-}
 
-///////// Like Count API Calling /////////////
-activityLikePostList(BuildContext context, _isLiked, id) async {
-  final url = baseUrl + ApiEndPoints().activityLikePostList;
+  ///////// Like Count API Calling /////////////
+  activityLikePostList(BuildContext context, id) async {
+    final url = baseUrl + ApiEndPoints().activityLikePostList;
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  var userId = prefs.getInt('isUserId');
-  var content = _isLiked == false ? "Like" : "Unlike";
-  Map<String, String> params = {
-    'activity_id': id,
-    'content': content,
-    'user_id': userId.toString(),
-  };
-  print("vvvvv");
-  print(content);
-  var response = await http.post(Uri.parse(url), body: params);
-  print(response);
-  if (response.statusCode == 200) {
-    List<ActivityLikePostListResponse> activityLikePostListResponse = [];
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userId = prefs.getInt('isUserId');
 
-    activityLikePostListResponse
-        .add(ActivityLikePostListResponse.fromjson(jsonDecode(response.body)));
+    var content = _isLiked == true ? "Unlike" : "Like";
+    Map<String, String> params = {
+      'activity_id': id,
+      'content': content,
+      'user_id': userId.toString(),
+    };
 
-    ActivityLikePostListResponse activityLikePostListRes =
-        activityLikePostListResponse[0];
+    var response = await http.post(Uri.parse(url), body: params);
+
+    if (response.statusCode == 200) {
+      activityPostList(context, page);
+      List<ActivityLikePostListResponse> activityLikePostListResponse = [];
+
+      activityLikePostListResponse.add(
+          ActivityLikePostListResponse.fromjson(jsonDecode(response.body)));
+
+      ActivityLikePostListResponse activityLikePostListRes =
+          activityLikePostListResponse[0];
+    }
   }
 }

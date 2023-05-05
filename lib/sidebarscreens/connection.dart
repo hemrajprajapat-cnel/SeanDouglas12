@@ -73,13 +73,13 @@ class _Connection extends State<Connection> {
                             ),
                           ],
                         ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        RecentActivity(),
-                        SizedBox(
-                          height: 10,
-                        ),
+                        // SizedBox(
+                        //   height: 10,
+                        // ),
+                        // RecentActivity(),
+                        // SizedBox(
+                        //   height: 10,
+                        // ),
                         Expanded(
                           child: SingleChildScrollView(
                             child: Container(
@@ -231,67 +231,67 @@ class _Connection extends State<Connection> {
   }
 }
 
-class RecentActivity extends StatefulWidget {
-  const RecentActivity({Key? key}) : super(key: key);
+// class RecentActivity extends StatefulWidget {
+//   const RecentActivity({Key? key}) : super(key: key);
 
-  @override
-  State<RecentActivity> createState() => _RecentActivity();
-}
+//   @override
+//   State<RecentActivity> createState() => _RecentActivity();
+// }
 
-class _RecentActivity extends State<RecentActivity> {
-  String dropdownValue = 'Recently Active';
-  @override
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Column(
-              children: [
-                DropdownButton<String>(
-                  value: dropdownValue,
-                  icon: const Icon(Icons.arrow_drop_down),
-                  isExpanded: true,
-                  elevation: 16,
-                  style: const TextStyle(
-                    color: Color.fromARGB(255, 42, 41, 41),
-                  ),
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      dropdownValue = newValue!;
-                    });
-                  },
-                  items: <String>[
-                    'Recently Active',
-                    'Newest Members',
-                    'Alphabetical'
-                  ].map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Container(
-                        child: Text(
-                          value,
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
+// class _RecentActivity extends State<RecentActivity> {
+//   String dropdownValue = 'Recently Active';
+//   @override
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       padding: EdgeInsets.symmetric(horizontal: 16),
+//       child: Row(
+//         children: [
+//           Expanded(
+//             flex: 1,
+//             child: Column(
+//               children: [
+//                 DropdownButton<String>(
+//                   value: dropdownValue,
+//                   icon: const Icon(Icons.arrow_drop_down),
+//                   isExpanded: true,
+//                   elevation: 16,
+//                   style: const TextStyle(
+//                     color: Color.fromARGB(255, 42, 41, 41),
+//                   ),
+//                   onChanged: (String? newValue) {
+//                     setState(() {
+//                       dropdownValue = newValue!;
+//                     });
+//                   },
+//                   items: <String>[
+//                     'Recently Active',
+//                     'Newest Members',
+//                     'Alphabetical'
+//                   ].map<DropdownMenuItem<String>>((String value) {
+//                     return DropdownMenuItem<String>(
+//                       value: value,
+//                       child: Container(
+//                         child: Text(
+//                           value,
+//                         ),
+//                       ),
+//                     );
+//                   }).toList(),
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 Future<ConnectionList> connectionGetList(BuildContext context) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   var user_id = prefs.getInt('isUserId');
-  print(user_id);
+
   final url = baseUrl + ApiEndPoints().connectionGetList;
 
   final response = await http.get(Uri.parse(

@@ -227,7 +227,7 @@ class _Feed extends State<Feed> {
 
                         RegExp exp = RegExp(r"<[^>]*>",
                             multiLine: true, caseSensitive: true);
-                        String content =
+                        String content_text =
                             feedGetList.content!.replaceAll(exp, '');
 
                         bool _like_c_user = feedGetList.like_c_user == true;
@@ -296,7 +296,7 @@ class _Feed extends State<Feed> {
                                         padding: EdgeInsets.only(
                                             top: 10, left: 10, right: 10),
                                         child: AutoSizeText(
-                                          "${feedGetList.content}",
+                                          "${content_text}",
                                           style: TextStyle(
                                               fontWeight: FontWeight.w600,
                                               height: 1.5,
@@ -312,18 +312,18 @@ class _Feed extends State<Feed> {
                                 Row(children: [
                                   IconButton(
                                     onPressed: () async {
-                                      setState(() {
-                                        if (_isLiked) {
-                                          _isLiked = false;
-                                        } else {
-                                          _isLiked = true;
-                                        }
-                                        activityLikePostList(
-                                          context,
-                                          _isLiked,
-                                          feedGetList.id,
-                                        );
-                                      });
+                                      // setState(() {
+                                      //   if (_isLiked) {
+                                      //     _isLiked = false;
+                                      //   } else {
+                                      //     _isLiked = true;
+                                      //   }
+                                      //   activityLikePostList(
+                                      //     context,
+                                      //     _isLiked,
+                                      //     feedGetList.id,
+                                      //   );
+                                      // });
                                     },
                                     icon: _like_c_user == true
                                         ? Icon(
