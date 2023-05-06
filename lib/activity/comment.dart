@@ -6,7 +6,7 @@ import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'design_course_app_theme.dart';
+import '../comman/design_course_app_theme.dart';
 import 'package:http/http.dart' as http;
 
 class Postcomment extends StatefulWidget {

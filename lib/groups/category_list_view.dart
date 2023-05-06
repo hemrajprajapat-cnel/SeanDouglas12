@@ -1,5 +1,5 @@
-import 'package:best_flutter_ui_templates/groups/design_course_app_theme.dart';
 import 'package:best_flutter_ui_templates/groups/models/category.dart';
+import '../comman/design_course_app_theme.dart';
 import 'package:best_flutter_ui_templates/main.dart';
 import 'package:flutter/material.dart';
 

@@ -1,20 +1,15 @@
 // ignore_for_file: non_constant_identifier_names
-
 import 'dart:convert';
-
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:best_flutter_ui_templates/activity/addpost.dart';
 import 'package:best_flutter_ui_templates/activity/comment.dart';
-import 'package:best_flutter_ui_templates/activity/home_design_course.dart';
 import 'package:best_flutter_ui_templates/api/api.dart';
 import 'package:best_flutter_ui_templates/comman/custome_dialog.dart';
 import 'package:best_flutter_ui_templates/library/course_info_screen.dart';
 import 'package:best_flutter_ui_templates/library/models/category.dart';
 import 'package:best_flutter_ui_templates/main.dart';
 import 'package:flutter/material.dart';
-import 'package:like_button/like_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'design_course_app_theme.dart';
+import '../comman/design_course_app_theme.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import 'package:http/http.dart' as http;
 
@@ -160,9 +155,7 @@ class _Library extends State<Library> with TickerProviderStateMixin {
             return ListView.builder(
                 shrinkWrap: true,
                 physics: ScrollPhysics(parent: null),
-                itemCount: isLoading
-                    ? tempLibraryList.length + 1
-                    : tempLibraryList.length,
+                itemCount: tempLibraryList.length + 1,
                 itemBuilder: (BuildContext context, int index) {
                   if (index < tempLibraryList.length) {
                     final int count = tempLibraryList.length;
@@ -380,29 +373,29 @@ class _Library extends State<Library> with TickerProviderStateMixin {
                                               ),
                                             )
                                           ]),
-                                          Column(
-                                            children: [
-                                              Container(
-                                                padding: const EdgeInsets.only(
-                                                    left: 15, right: 15),
-                                                child: Align(
-                                                  alignment:
-                                                      Alignment.centerLeft,
-                                                  child: Text(
-                                                    "${librarylist.like_count}",
-                                                    style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      fontSize: 12,
-                                                      color: Color(0xff073278),
-                                                    ),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
+                                          // Column(
+                                          //   children: [
+                                          //     Container(
+                                          //       padding: const EdgeInsets.only(
+                                          //           left: 15, right: 15),
+                                          //       child: Align(
+                                          //         alignment:
+                                          //             Alignment.centerLeft,
+                                          //         child: Text(
+                                          //           "${librarylist.like_count}",
+                                          //           style: TextStyle(
+                                          //             fontWeight:
+                                          //                 FontWeight.w500,
+                                          //             fontSize: 12,
+                                          //             color: Color(0xff073278),
+                                          //           ),
+                                          //           overflow:
+                                          //               TextOverflow.ellipsis,
+                                          //         ),
+                                          //       ),
+                                          //     ),
+                                          //   ],
+                                          // ),
                                           SizedBox(
                                             height: 20,
                                           ),

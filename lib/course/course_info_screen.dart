@@ -5,7 +5,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:http/http.dart' as http;
 import 'package:best_flutter_ui_templates/api/api.dart';
 import 'package:flutter/material.dart';
-import 'design_course_app_theme.dart';
+import '../comman/design_course_app_theme.dart';
 
 class CourseInfoScreen extends StatefulWidget {
   bool isLoading = true;
@@ -171,61 +171,48 @@ class _CourseInfoScreenState extends State<CourseInfoScreen>
                                         // ),
                                         Expanded(
                                           child: Card(
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(20.0),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(20.0),
+                                            ),
+                                            elevation: 50,
+                                            shadowColor: Colors.white,
+                                            color: Colors.white,
+                                            child: Container(
+                                              height: 80,
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Center(
+                                                      child: AutoSizeText(
+                                                    "1",
+                                                    style: TextStyle(
+                                                      color: Color(0xff073278),
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                    minFontSize: 15,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  )),
+                                                  Center(
+                                                      child: AutoSizeText(
+                                                    "Module",
+                                                    style: TextStyle(
+                                                      color: Color(0xff073278),
+                                                    ),
+                                                    textAlign: TextAlign.center,
+                                                    minFontSize: 15,
+                                                    maxLines: 1,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ))
+                                                ],
                                               ),
-                                              elevation: 50,
-                                              shadowColor: Colors.white,
-                                              color: Colors.white,
-                                              child: Container(
-                                                height: 80,
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Center(
-                                                        child: AutoSizeText(
-                                                      "1",
-                                                      style: TextStyle(
-                                                        color:
-                                                            Color(0xff073278),
-                                                      ),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      minFontSize: 15,
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    )),
-                                                    Center(
-                                                        child: AutoSizeText(
-                                                      "Module",
-                                                      style: TextStyle(
-                                                        color:
-                                                            Color(0xff073278),
-                                                      ),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      minFontSize: 15,
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ))
-                                                  ],
-                                                ),
-                                              )),
+                                            ),
+                                          ),
                                         ),
-                                        // Expanded(
-                                        //   flex: 1,
-                                        //   child: getTimeBoxUI('5', 'Courses'),
-                                        // ),
-                                        // Expanded(
-                                        //   flex: 1,
-                                        //   child:
-                                        //       getTimeBoxUI('1', 'Certificate'),
-                                        // ),
-
                                         Expanded(
                                           child: Card(
                                               shape: RoundedRectangleBorder(

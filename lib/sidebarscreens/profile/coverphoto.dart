@@ -1,10 +1,8 @@
 // ignore_for_file: non_constant_identifier_names
-
 import 'dart:convert';
 import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:best_flutter_ui_templates/api/api.dart';
-
 import 'package:best_flutter_ui_templates/comman/custome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';

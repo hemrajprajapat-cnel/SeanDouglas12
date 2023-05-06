@@ -7,7 +7,7 @@ import 'package:best_flutter_ui_templates/groups/models/category.dart';
 import 'package:best_flutter_ui_templates/main.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'design_course_app_theme.dart';
+import '../comman/design_course_app_theme.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 import 'package:http/http.dart' as http;
 
@@ -77,9 +77,6 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
           await http.get(Uri.parse("$url?task=my_group_list&user_id=856"));
     }
 
-    // var response = await http
-    //     .get(Uri.parse("$url?task=$task&user_id=$user_id&page=$Page"));
-
     isLoading = false;
 
     if (response.statusCode == 200) {
@@ -107,29 +104,37 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: DesignCourseAppTheme.nearlyWhite,
-        child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Column(children: <Widget>[
-              Expanded(
-                  child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: Column(children: [
-                        getAppBarUI(),
-                        StickyHeader(
-                          header: Container(
-                            child: getSearchBarUI(),
-                          ),
-                          content: Container(
-                            child: Column(
-                              children: <Widget>[
-                                getPopularCourseUI(),
-                              ],
-                            ),
-                          ),
+      color: DesignCourseAppTheme.nearlyWhite,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Column(
+          children: <Widget>[
+            Expanded(
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: Column(
+                  children: [
+                    getAppBarUI(),
+                    StickyHeader(
+                      header: Container(
+                        child: getSearchBarUI(),
+                      ),
+                      content: Container(
+                        child: Column(
+                          children: <Widget>[
+                            getPopularCourseUI(),
+                          ],
                         ),
-                      ])))
-            ])));
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget PopularCourseListView() {
@@ -144,9 +149,7 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
             return GridView.builder(
                 physics: ScrollPhysics(parent: null),
                 shrinkWrap: true,
-                itemCount: isLoading
-                    ? tempGroupCourse.length + 1
-                    : tempGroupCourse.length,
+                itemCount: tempGroupCourse.length + 1,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 32.0,
@@ -307,24 +310,6 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
                                                                               color: Color(0xff073278),
                                                                             ),
                                                                           )
-                                                                          // AutoSizeText(
-                                                                          //   " ${ListGetGroup.Time}",
-                                                                          //   // textAlign:
-                                                                          //   //     TextAlign.left,
-                                                                          //   // style:
-                                                                          //   //     TextStyle(
-                                                                          //   //   fontWeight: FontWeight.w200,
-
-                                                                          //   //   // letterSpacing: 0.27,
-                                                                          //   //   color: Color(0xff073278),
-                                                                          //   // ),
-                                                                          //   minFontSize:
-                                                                          //       8,
-                                                                          //   maxLines:
-                                                                          //       2,
-                                                                          //   overflow:
-                                                                          //       TextOverflow.ellipsis,
-                                                                          // ),
                                                                         ],
                                                                       ),
                                                                     ),

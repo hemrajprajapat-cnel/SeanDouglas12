@@ -243,30 +243,6 @@ class _CourseInfoScreenState extends State<CourseInfoScreen>
                                                         height: 180,
                                                         fit: BoxFit.fill,
                                                       ),
-                                            // Align(
-                                            //   alignment: Alignment.topLeft,
-                                            //   child: FloatingActionButton(
-                                            //     onPressed: () async {
-                                            //       XFile? pickedImage =
-                                            //           await _picker.pickImage(
-                                            //               source: ImageSource
-                                            //                   .gallery);
-                                            //       setState(() {
-                                            //         image =
-                                            //             File(pickedImage!.path);
-                                            //       });
-
-                                            //       groupUploadPriofile(context,
-                                            //           image, singleGroup.id);
-                                            //     },
-                                            //     child: Icon(
-                                            //       Icons.camera_alt_rounded,
-                                            //       color: Colors.white,
-                                            //     ),
-                                            //     backgroundColor:
-                                            //         Colors.transparent,
-                                            //   ),
-                                            // ),
                                           ],
                                         ),
                                         Padding(

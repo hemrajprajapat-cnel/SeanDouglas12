@@ -10,7 +10,7 @@ import 'package:best_flutter_ui_templates/main.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
-import 'design_course_app_theme.dart';
+import '../comman/design_course_app_theme.dart';
 import 'package:http/http.dart' as http;
 
 class DesignCourseHomeScreen extends StatefulWidget {
@@ -143,9 +143,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
               physics: ScrollPhysics(parent: null),
-              itemCount: isLoading
-                  ? tempActivityList.length + 1
-                  : tempActivityList.length,
+              itemCount: tempActivityList.length + 1,
               itemBuilder: (BuildContext context, int index) {
                 if (index < tempActivityList.length) {
                   final int count = tempActivityList.length;

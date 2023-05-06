@@ -78,21 +78,6 @@ class _CourseInfoScreenState extends State<CourseInfoScreen>
                                       color: Colors.grey,
                                     ),
                                   ),
-                                  // Icon(
-                                  //   Icons.watch_later_outlined,
-                                  //   color: Color(0xff073278),
-                                  //   size: 18,
-                                  // ),
-                                  // Text(
-                                  //   ' 07:30 PM',
-                                  //   textAlign: TextAlign.left,
-                                  //   style: TextStyle(
-                                  //     fontWeight: FontWeight.w400,
-                                  //     fontSize: 17,
-                                  //     letterSpacing: 0.20,
-                                  //     color: Colors.grey,
-                                  //   ),
-                                  // ),
                                 ],
                               ),
                               Row(

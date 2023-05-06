@@ -2,7 +2,7 @@ import 'package:best_flutter_ui_templates/events/category_list_view.dart';
 import 'package:best_flutter_ui_templates/events/popular_course_list_view.dart';
 import 'package:best_flutter_ui_templates/main.dart';
 import 'package:flutter/material.dart';
-import 'design_course_app_theme.dart';
+import '../comman/design_course_app_theme.dart';
 import 'package:sticky_headers/sticky_headers.dart';
 
 class Events extends StatefulWidget {
@@ -108,8 +108,7 @@ class _Events extends State<Events> {
     );
   }
 
-  void moveTo() {
-  }
+  void moveTo() {}
 
   Widget getButtonUI(CategoryType categoryTypeData, bool isSelected) {
     String txt = '';
@@ -257,7 +256,6 @@ class _Events extends State<Events> {
               ],
             ),
           ),
-      
         ],
       ),
     );

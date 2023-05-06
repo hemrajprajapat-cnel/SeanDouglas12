@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:best_flutter_ui_templates/app_theme.dart';
 import 'package:best_flutter_ui_templates/home_screen.dart';
-import 'package:best_flutter_ui_templates/course/home_design_course.dart';
-import 'package:best_flutter_ui_templates/groups/home_design_course.dart';
 import 'package:best_flutter_ui_templates/sidebarscreens/rank.dart';
 import 'package:best_flutter_ui_templates/sidebarscreens/CPDpoint.dart';
 import 'package:best_flutter_ui_templates/sidebarscreens/connection.dart';

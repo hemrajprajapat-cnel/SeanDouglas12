@@ -95,16 +95,6 @@ class _CourseInfoScreenState extends State<CourseInfoScreen>
                             SizedBox(
                               height: 10,
                             ),
-                            // AspectRatio(
-                            //   aspectRatio: 16 / 9,
-                            //   child: BetterPlayer.network(
-                            //     "https://youtu.be/nXbXNB9E71o",
-                            //     betterPlayerConfiguration:
-                            //         BetterPlayerConfiguration(
-                            //       aspectRatio: 16 / 9,
-                            //     ),
-                            //   ),
-                            // ),
                             SizedBox(
                               height: 10,
                             ),
