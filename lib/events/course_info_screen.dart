@@ -7,15 +7,27 @@ import 'package:flutter/material.dart';
 import './registerevent.dart';
 
 class CourseInfoScreen extends StatefulWidget {
+  final index;
+  const CourseInfoScreen(this.index);
+
   @override
   _CourseInfoScreenState createState() => _CourseInfoScreenState();
 }
 
+List<EventDetailsData> eventDetailsData = [];
+List<EventDetailsData> tempEventDetailsData = [];
+
 class _CourseInfoScreenState extends State<CourseInfoScreen>
     with TickerProviderStateMixin {
   @override
+  void initState() {
+    super.initState();
+    getEventDetails(context);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    EventDetailsData eventDetails = tempEventDetailsData[0];
+    EventDetailsData eventDetails = tempEventDetailsData[widget.index];
     return Container(
       child: Scaffold(
         backgroundColor: Color.fromARGB(255, 205, 203, 203),
@@ -175,10 +187,8 @@ class _CourseInfoScreenState extends State<CourseInfoScreen>
 }
 
 /////////// Api implementation for Get Event Details  /////////////
-List<EventDetailsData> eventDetailsData = [];
-List<EventDetailsData> tempEventDetailsData = [];
 
-Future<void> getEventDetails(BuildContext context, id) async {
+Future<void> getEventDetails(BuildContext context) async {
   List<EventDetailsResponse>? eventDetailsResponse;
 
   var url = baseUrl + ApiEndPoints().eventList;
@@ -190,19 +200,9 @@ Future<void> getEventDetails(BuildContext context, id) async {
     EventDetailsResponse detailsResponse = eventDetailsResponse[0];
     if (detailsResponse.status == true && detailsResponse.error_code == "0") {
       if (detailsResponse.eventDetailsData != null) {
-        for (var i = 0; i < detailsResponse.eventDetailsData!.length; i++) {
-          if (id == detailsResponse.eventDetailsData![i].id) {
-            List<EventDetailsData> eventDetailsData = [];
-            eventDetailsData = detailsResponse.eventDetailsData!;
-            tempEventDetailsData = eventDetailsData;
-          }
-        }
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CourseInfoScreen(),
-          ),
-        );
+        // List<EventDetailsData> eventDetailsData = [];
+        eventDetailsData = detailsResponse.eventDetailsData!;
+        tempEventDetailsData = eventDetailsData;
       }
     }
   }

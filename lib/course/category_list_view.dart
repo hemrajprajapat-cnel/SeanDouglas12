@@ -405,7 +405,5 @@ class CoursesListData {
     course_featured_image_link = json["course_featured_image_link"];
     course_link = json['course_link'];
     course_lesson_link = json['course_lesson_link'];
-    print("json['course_title']");
-    print(json['course_title']);
   }
 }

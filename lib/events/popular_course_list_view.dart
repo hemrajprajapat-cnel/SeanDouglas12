@@ -151,9 +151,9 @@ class _CategoryView extends State<CategoryView> {
             );
 
             // ListGetGroup getGroup = tempGroupCourse[index];
-
             widget.animationController?.forward();
-            final EventListData = widget.tempEventListData[index];
+
+            final eventListData = widget.tempEventListData[index];
             return AnimatedBuilder(
                 animation: widget.animationController!,
                 builder: (BuildContext context, Widget? child) {
@@ -164,162 +164,158 @@ class _CategoryView extends State<CategoryView> {
                           0.0, 50 * (1.0 - animation.value), 0.0),
                       child: InkWell(
                         splashColor: Colors.transparent,
-                        onTap: widget.callback,
-                        child: GestureDetector(
-                            onTap: () async {
-                              await getEventDetails(context, EventListData!.id);
-                            },
-                            child: SizedBox(
-                              height: 280,
-                              child: Stack(
-                                alignment: AlignmentDirectional.bottomCenter,
-                                children: <Widget>[
-                                  Container(
-                                    child: Column(
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: HexColor('#F8FAFB'),
-                                              borderRadius:
-                                                  const BorderRadius.all(
-                                                      Radius.circular(20.0)),
-                                            ),
-                                            child: Column(
-                                              children: <Widget>[
-                                                Expanded(
-                                                  child: Card(
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              16),
-                                                      //set border radius more than 50% of height and width to make circle
-                                                    ),
-                                                    elevation: 20,
-                                                    child: Container(
-                                                      child: Column(
-                                                        children: <Widget>[
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    top: 8,
-                                                                    left: 10,
-                                                                    right: 10),
-                                                            child: AutoSizeText(
-                                                              "${EventListData!.event_title}",
+                        // onTap: widget.callback,
+
+                        // child: GestureDetector(
+                        onTap: () async {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CourseInfoScreen(index),
+                            ),
+                          );
+                          // await getEventDetails(context, eventListData!.id);
+                        },
+                        child: SizedBox(
+                          height: 280,
+                          child: Stack(
+                            alignment: AlignmentDirectional.bottomCenter,
+                            children: <Widget>[
+                              Container(
+                                child: Column(
+                                  children: <Widget>[
+                                    Expanded(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: HexColor('#F8FAFB'),
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(20.0)),
+                                        ),
+                                        child: Column(
+                                          children: <Widget>[
+                                            Expanded(
+                                              child: Card(
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                ),
+                                                elevation: 20,
+                                                child: Container(
+                                                  child: Column(
+                                                    children: <Widget>[
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                top: 8,
+                                                                left: 10,
+                                                                right: 10),
+                                                        child: AutoSizeText(
+                                                          "${eventListData!.event_title}",
+                                                          textAlign:
+                                                              TextAlign.left,
+                                                          style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w600,
+                                                            fontSize: 16,
+                                                            letterSpacing: 0.27,
+                                                            color: Color(
+                                                                0xff073278),
+                                                          ),
+                                                          minFontSize: 10,
+                                                          maxLines: 2,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 5,
+                                                      ),
+                                                      Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                          left: 10,
+                                                          right: 10,
+                                                        ),
+                                                        child: Row(
+                                                          children: <Widget>[
+                                                            AutoSizeText(
+                                                              "${eventListData!.event_start_date}",
                                                               textAlign:
                                                                   TextAlign
                                                                       .left,
                                                               style: TextStyle(
                                                                 fontWeight:
                                                                     FontWeight
-                                                                        .w600,
-                                                                fontSize: 16,
+                                                                        .w200,
+                                                                fontSize: 10,
                                                                 letterSpacing:
                                                                     0.27,
                                                                 color: Color(
                                                                     0xff073278),
                                                               ),
-                                                              minFontSize: 10,
-                                                              maxLines: 2,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .ellipsis,
+                                                              minFontSize: 8,
                                                             ),
-                                                          ),
-                                                          SizedBox(
-                                                            height: 5,
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                    .only(
-                                                              left: 10,
-                                                              right: 10,
-                                                            ),
-                                                            child: Row(
-                                                              children: <
-                                                                  Widget>[
-                                                                AutoSizeText(
-                                                                  " ${EventListData!.event_start_date}",
-                                                                  textAlign:
-                                                                      TextAlign
-                                                                          .left,
-                                                                  style:
-                                                                      TextStyle(
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .w200,
-                                                                    fontSize:
-                                                                        10,
-                                                                    letterSpacing:
-                                                                        0.27,
-                                                                    color: Color(
-                                                                        0xff073278),
-                                                                  ),
-                                                                  minFontSize:
-                                                                      8,
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ],
+                                                          ],
+                                                        ),
                                                       ),
-                                                    ),
+                                                    ],
                                                   ),
                                                 ),
-                                                const SizedBox(
-                                                  width: 48,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 48,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 24, right: 16, left: 16),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(16.0)),
-                                          boxShadow: <BoxShadow>[
-                                            BoxShadow(
-                                                color: Color(0xff073278)
-                                                    .withOpacity(0.2),
-                                                offset: const Offset(0.0, 0.0),
-                                                blurRadius: 6.0),
-                                          ],
-                                        ),
-                                        child: ClipRRect(
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(16.0)),
-                                          child: AspectRatio(
-                                            aspectRatio: 1.28,
-                                            child: Image(
-                                              image: NetworkImage(
-                                                "${EventListData!.event_thumbnail_image_link}",
                                               ),
-                                              width: 300,
-                                              height: 180,
-                                              fit: BoxFit.fill,
                                             ),
-                                          ),
+                                            const SizedBox(
+                                              width: 48,
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ),
-                                  )
-                                ],
+                                    const SizedBox(
+                                      height: 48,
+                                    ),
+                                  ],
+                                ),
                               ),
-                            )),
+                              Container(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(
+                                      top: 24, right: 16, left: 16),
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(16.0)),
+                                      boxShadow: <BoxShadow>[
+                                        BoxShadow(
+                                            color: Color(0xff073278)
+                                                .withOpacity(0.2),
+                                            offset: const Offset(0.0, 0.0),
+                                            blurRadius: 6.0),
+                                      ],
+                                    ),
+                                    child: ClipRRect(
+                                      borderRadius: const BorderRadius.all(
+                                          Radius.circular(16.0)),
+                                      child: AspectRatio(
+                                        aspectRatio: 1.28,
+                                        child: Image(
+                                          image: NetworkImage(
+                                            "${eventListData!.event_thumbnail_image_link}",
+                                          ),
+                                          width: 300,
+                                          height: 180,
+                                          fit: BoxFit.fill,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        // ),
                       ),
                     ),
                   );

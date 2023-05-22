@@ -49,7 +49,6 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
   List<ActivityPostList> tempActivityList = [];
 
   Future<void> activityPostList(BuildContext context, page) async {
-    print("object");
     isLoading = true;
     final url = baseUrl + ApiEndPoints().activityPostList;
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -101,13 +100,24 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
     }
   }
 
+  // Pull Down Page Refresh
+  Future<void> _pullDownRefresh() async {
+    await Future.delayed(Duration(seconds: 1));
+    setState(() {
+      activityPostList(context, 1);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: DesignCourseAppTheme.nearlyWhite,
-        child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Column(children: <Widget>[
+      color: DesignCourseAppTheme.nearlyWhite,
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: RefreshIndicator(
+          onRefresh: _pullDownRefresh,
+          child: Column(
+            children: <Widget>[
               Expanded(
                   child: SingleChildScrollView(
                 controller: scrollController,
@@ -127,7 +137,11 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                 ]),
               )),
               // ),
-            ])));
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget PopularCourseListView() {

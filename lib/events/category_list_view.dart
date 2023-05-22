@@ -1,10 +1,10 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:best_flutter_ui_templates/events/course_info_screen.dart';
 import 'package:best_flutter_ui_templates/events/models/category.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:best_flutter_ui_templates/api/api.dart';
+import 'package:video_player/video_player.dart';
 
 class CategoryListView extends StatefulWidget {
   const CategoryListView({Key? key, this.callBack}) : super(key: key);
@@ -20,10 +20,10 @@ class _CategoryListViewState extends State<CategoryListView>
   bool isLoading = false;
   @override
   void initState() {
+    super.initState();
     animationController = AnimationController(
         duration: const Duration(milliseconds: 2000), vsync: this);
     getPreviusEventList(context);
-    super.initState();
   }
 
   Future<bool> getData() async {
@@ -83,53 +83,55 @@ class _CategoryListViewState extends State<CategoryListView>
     //   child: isLoading
     //       ? CircularProgressIndicator()
     return Padding(
-        padding: const EdgeInsets.only(top: 16, bottom: 16),
-        child: Container(
-          height: 134,
-          width: double.infinity,
-          child: Center(
-            child: isLoading
-                ? CircularProgressIndicator()
-                : FutureBuilder<bool>(
-                    future: getData(),
-                    builder:
-                        (BuildContext context, AsyncSnapshot<bool> snapshot) {
-                      if (!snapshot.hasData) {
-                        return const SizedBox();
-                      } else {
-                        return ListView.builder(
-                          padding: const EdgeInsets.only(
-                              top: 0, bottom: 0, right: 16, left: 16),
-                          itemCount: tempPreviousEventListData.length,
-                          scrollDirection: Axis.horizontal,
-                          itemBuilder: (BuildContext context, int index) {
-                            final int count = tempPreviousEventListData.length;
-                            final Animation<double> animation =
-                                Tween<double>(begin: 0.0, end: 1.0).animate(
-                                    CurvedAnimation(
-                                        parent: animationController!,
-                                        curve: Interval(
-                                            (1 / count) * index, 1.0,
-                                            curve: Curves.fastOutSlowIn)));
-                            animationController?.forward();
-                            return CategoryView(
-                              animation: animation,
-                              previuoslist: tempPreviousEventListData[index],
-                              animationController: animationController,
-                              callback: widget.callBack,
-                            );
-                          },
-                        );
-                      }
-                    },
-                  ),
-          ),
-        ));
+      padding: const EdgeInsets.only(top: 16, bottom: 16),
+      child: Container(
+        height: 134,
+        width: double.infinity,
+        child: Center(
+          child: isLoading
+              ? CircularProgressIndicator()
+              : FutureBuilder<bool>(
+                  future: getData(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                    if (!snapshot.hasData) {
+                      return const SizedBox();
+                    } else {
+                      return ListView.builder(
+                        padding: const EdgeInsets.only(
+                            top: 0, bottom: 0, right: 16, left: 16),
+                        itemCount: tempPreviousEventListData.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (BuildContext context, int index) {
+                          final int count = tempPreviousEventListData.length;
+                          final Animation<double> animation =
+                              Tween<double>(begin: 0.0, end: 1.0).animate(
+                            CurvedAnimation(
+                              parent: animationController!,
+                              curve: Interval((1 / count) * index, 1.0,
+                                  curve: Curves.fastOutSlowIn),
+                            ),
+                          );
+                          animationController?.forward();
+                          return CategoryView(
+                            animation: animation,
+                            previuoslist: tempPreviousEventListData[index],
+                            animationController: animationController,
+                            callback: widget.callBack,
+                          );
+                        },
+                      );
+                    }
+                  },
+                ),
+        ),
+      ),
+    );
   }
 }
 
-class CategoryView extends StatelessWidget {
-  const CategoryView(
+class CategoryView extends StatefulWidget {
+  CategoryView(
       {Key? key,
       // this.category,
       this.previuoslist,
@@ -145,21 +147,63 @@ class CategoryView extends StatelessWidget {
   final Animation<double>? animation;
 
   @override
+  _CategoryViewState createState() => _CategoryViewState();
+}
+
+class _CategoryViewState extends State<CategoryView>
+    with TickerProviderStateMixin {
+  late VideoPlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    var _controller;
+  }
+
+  void _showVideoPopup() async {
+    await showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        contentPadding: EdgeInsets.zero,
+        content: SingleChildScrollView(
+          child: Column(
+            children: [
+              AspectRatio(
+                aspectRatio: _controller.value.aspectRatio,
+                child: VideoPlayer(_controller),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: Text('Close'),
+            onPressed: () {
+              _controller.pause();
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: animationController!,
+      animation: widget.animationController!,
       builder: (BuildContext context, Widget? child) {
         return FadeTransition(
-          opacity: animation!,
+          opacity: widget.animation!,
           child: Transform(
             transform: Matrix4.translationValues(
-                100 * (1.0 - animation!.value), 0.0, 0.0),
+                100 * (1.0 - widget.animation!.value), 0.0, 0.0),
             child: InkWell(
               splashColor: Colors.transparent,
-              onTap: callback,
+              onTap: widget.callback,
               child: GestureDetector(
                 onTap: () async {
-                  await getEventDetails(context, previuoslist!.id);
+                  // await getEventDetails(context, previuoslist!.id);
                 },
                 child: SizedBox(
                   width: 280,
@@ -209,7 +253,8 @@ class CategoryView extends StatelessWidget {
                                                 padding: const EdgeInsets.only(
                                                     top: 10),
                                                 child: Text(
-                                                  previuoslist!.event_name,
+                                                  widget
+                                                      .previuoslist!.event_name,
                                                   textAlign: TextAlign.left,
                                                   maxLines: 2,
                                                   overflow:
@@ -225,7 +270,7 @@ class CategoryView extends StatelessWidget {
                                               Row(
                                                 children: <Widget>[
                                                   AutoSizeText(
-                                                    previuoslist!
+                                                    widget.previuoslist!
                                                         .event_start_date,
                                                     textAlign: TextAlign.left,
                                                     style: TextStyle(
@@ -246,34 +291,67 @@ class CategoryView extends StatelessWidget {
                                                     bottom: 16, right: 16),
                                                 child: Row(
                                                   children: <Widget>[
-                                                    Container(
-                                                      decoration: BoxDecoration(
-                                                        color:
-                                                            Color(0xff66C23D),
-                                                        borderRadius:
-                                                            const BorderRadius
-                                                                    .all(
-                                                                Radius.circular(
-                                                                    8.0)),
-                                                      ),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .all(4),
-                                                        child: Text(
-                                                          'Click to view - Recording',
-                                                          textAlign:
-                                                              TextAlign.left,
-                                                          style: TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.w600,
-                                                            fontSize: 10,
-                                                            letterSpacing: 0.27,
-                                                            color: Colors.white,
+                                                    GestureDetector(
+                                                      onTap: () {
+                                                        _controller =
+                                                            VideoPlayerController
+                                                                .network(
+                                                                    'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4')
+                                                              ..initialize()
+                                                                  .then((_) {
+                                                                setState(() {});
+                                                              });
+                                                        _showVideoPopup();
+                                                        _controller.play();
+                                                      },
+                                                      child: Container(
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color:
+                                                              Color(0xff66C23D),
+                                                          borderRadius:
+                                                              BorderRadius.all(
+                                                                  Radius
+                                                                      .circular(
+                                                                          8.0)),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                                color: Color
+                                                                    .fromARGB(
+                                                                        255,
+                                                                        156,
+                                                                        151,
+                                                                        151), // Change color of the shadow
+                                                                blurRadius:
+                                                                    10.0,
+                                                                spreadRadius:
+                                                                    2.0,
+                                                                offset: Offset(
+                                                                    2.0, 2.0))
+                                                          ],
+                                                        ),
+                                                        child: Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(4),
+                                                          child: Text(
+                                                            'Click to view - Recording',
+                                                            textAlign:
+                                                                TextAlign.left,
+                                                            style: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w600,
+                                                              fontSize: 10,
+                                                              letterSpacing:
+                                                                  0.27,
+                                                              color:
+                                                                  Colors.white,
+                                                            ),
                                                           ),
                                                         ),
                                                       ),
-                                                    )
+                                                    ),
                                                   ],
                                                 ),
                                               ),
@@ -302,7 +380,7 @@ class CategoryView extends StatelessWidget {
                                     aspectRatio: 1.0,
                                     child: Image(
                                       image: NetworkImage(
-                                        "${previuoslist!.event_thumbnail_image_link}",
+                                        "${widget.previuoslist!.event_thumbnail_image_link}",
                                       ),
                                       width: 300,
                                       height: 180,
@@ -322,5 +400,11 @@ class CategoryView extends StatelessWidget {
         );
       },
     );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
   }
 }
