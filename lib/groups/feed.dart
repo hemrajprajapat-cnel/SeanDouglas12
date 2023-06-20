@@ -2,7 +2,7 @@
 
 import 'dart:convert';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:best_flutter_ui_templates/activity/comment.dart';
+import 'package:best_flutter_ui_templates/comman/comment.dart';
 import 'package:best_flutter_ui_templates/activity/home_design_course.dart';
 import 'package:best_flutter_ui_templates/api/api.dart';
 import 'package:best_flutter_ui_templates/comman/custome_dialog.dart';

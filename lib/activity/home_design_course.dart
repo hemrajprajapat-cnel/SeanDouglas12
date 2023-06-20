@@ -1,9 +1,8 @@
 import 'dart:convert';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:best_flutter_ui_templates/activity/addpost.dart';
-import 'package:best_flutter_ui_templates/activity/comment.dart';
+import 'package:best_flutter_ui_templates/comman/comment.dart';
 import 'package:best_flutter_ui_templates/activity/models/category.dart';
-import 'package:best_flutter_ui_templates/activity/course_info_screen.dart';
 import 'package:best_flutter_ui_templates/api/api.dart';
 import 'package:best_flutter_ui_templates/comman/custome_dialog.dart';
 import 'package:best_flutter_ui_templates/main.dart';
@@ -20,15 +19,15 @@ class DesignCourseHomeScreen extends StatefulWidget {
 
 class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
     with TickerProviderStateMixin {
-  int? value = 1;
-
   AnimationController? animationController;
   final scrollController = ScrollController();
 
-  var isLoading = false;
   int page = 1;
+  var isLoading = false;
   var commentType = "A";
   var _isLiked = false;
+  var searchQuery = '';
+  int? choiceChipValue = 1;
 
   @override
   void initState() {
@@ -53,11 +52,35 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
     final url = baseUrl + ApiEndPoints().activityPostList;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var userId = prefs.getInt('isUserId');
-    var response = await http.get(Uri.parse("$url&user_id=$userId&page=$page"));
+
+    String scopeVal = '';
+    switch (choiceChipValue) {
+      case 1:
+        scopeVal = '';
+        break;
+      case 2:
+        scopeVal = 'favorites';
+        break;
+      case 3:
+        scopeVal = 'friends';
+        break;
+      case 4:
+        scopeVal = 'groups';
+        break;
+      case 5:
+        scopeVal = 'mentions';
+        break;
+      case 6:
+        scopeVal = 'following';
+        break;
+      default:
+        scopeVal = '';
+    }
+
+    var response = await http.get(Uri.parse(
+        "$url&user_id=$userId&page=$page&search=$searchQuery&scope=$scopeVal"));
 
     isLoading = false;
-
-    // bool isLiked = true;
 
     if (response.statusCode == 200) {
       List<ActivityPostListResponse> activityPostListResponse = [];
@@ -66,6 +89,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
           .add(ActivityPostListResponse.fromJson(jsonDecode(response.body)));
 
       ActivityPostListResponse userResponse = activityPostListResponse[0];
+
       if (userResponse.status == "true" && userResponse.error_code == "0") {
         if (userResponse.activityPostList != null) {
           var data = userResponse.activityPostList;
@@ -125,11 +149,11 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                   getAppBarUI(),
                   StickyHeader(
                     header: Container(
-                      child: getSearchBarUI(),
+                      child: getSearchBarUI(context),
                     ),
                     content: Container(
                       child: Column(children: <Widget>[
-                        getCategoryUI(),
+                        getCategoryUI(context),
                         getPopularCourseUI(),
                       ]),
                     ),
@@ -410,16 +434,16 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
     );
   }
 
-  void moveTo() {
-    Navigator.push<dynamic>(
-      context,
-      MaterialPageRoute<dynamic>(
-        builder: (BuildContext context) => CourseInfoScreen(),
-      ),
-    );
-  }
+  // void moveTo() {
+  //   Navigator.push<dynamic>(
+  //     context,
+  //     MaterialPageRoute<dynamic>(
+  //       builder: (BuildContext context) => CourseInfoScreen(),
+  //     ),
+  //   );
+  // }
 
-  Widget getSearchBarUI() {
+  Widget getSearchBarUI(context) {
     return Padding(
       padding: const EdgeInsets.only(left: 18),
       child: Row(
@@ -447,11 +471,13 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                       child: Container(
                         padding: const EdgeInsets.only(left: 8, right: 8),
                         child: TextFormField(
-                          onTap: () {
-                            scrollController.animateTo(
-                                scrollController.position.maxScrollExtent,
-                                duration: Duration(milliseconds: 500),
-                                curve: Curves.fastOutSlowIn);
+                          onChanged: (value) {
+                            setState(() {
+                              searchQuery = value;
+                              if (value.length >= 3 || value.isEmpty) {
+                                activityPostList(context, page);
+                              }
+                            });
                           },
                           style: TextStyle(
                             fontFamily: 'Hind',
@@ -461,7 +487,10 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                           ),
                           keyboardType: TextInputType.text,
                           decoration: InputDecoration(
-                            labelText: 'Search for activity',
+                            labelText:
+                                searchQuery.isNotEmpty && searchQuery.length < 3
+                                    ? 'Please enter minimum 3 characters'
+                                    : 'Search for activity',
                             border: InputBorder.none,
                             helperStyle: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -472,7 +501,10 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                               fontWeight: FontWeight.w600,
                               fontSize: 16,
                               letterSpacing: 0.2,
-                              color: HexColor('#B9BABC'),
+                              color: searchQuery.isNotEmpty &&
+                                      searchQuery.length < 3
+                                  ? HexColor('#FF9494')
+                                  : HexColor('#B9BABC'),
                             ),
                           ),
                           onEditingComplete: () {},
@@ -497,7 +529,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
     );
   }
 
-  Widget getCategoryUI() {
+  Widget getCategoryUI(context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -521,15 +553,18 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                       letterSpacing: 0.27,
-                      color: value == 1 ? Colors.white : Color(0xff073278),
+                      color: choiceChipValue == 1
+                          ? Colors.white
+                          : Color(0xff073278),
                     ),
                   ),
-                  selected: value == 1,
+                  selected: choiceChipValue == 1,
                   selectedColor: Color(0xff073278),
                   backgroundColor: Colors.transparent,
                   onSelected: (bool selected) {
                     setState(() {
-                      value = selected ? 1 : null;
+                      choiceChipValue = selected ? 1 : null;
+                      activityPostList(context, page);
                     });
                   },
                 ),
@@ -545,15 +580,18 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                       letterSpacing: 0.27,
-                      color: value == 2 ? Colors.white : Color(0xff073278),
+                      color: choiceChipValue == 2
+                          ? Colors.white
+                          : Color(0xff073278),
                     ),
                   ),
-                  selected: value == 2,
+                  selected: choiceChipValue == 2,
                   selectedColor: Color(0xff073278),
                   backgroundColor: Colors.transparent,
                   onSelected: (bool selected) {
                     setState(() {
-                      value = selected ? 2 : null;
+                      choiceChipValue = selected ? 2 : null;
+                      activityPostList(context, page);
                     });
                   },
                 ),
@@ -569,15 +607,18 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                       letterSpacing: 0.27,
-                      color: value == 3 ? Colors.white : Color(0xff073278),
+                      color: choiceChipValue == 3
+                          ? Colors.white
+                          : Color(0xff073278),
                     ),
                   ),
-                  selected: value == 3,
+                  selected: choiceChipValue == 3,
                   selectedColor: Color(0xff073278),
                   backgroundColor: Colors.transparent,
                   onSelected: (bool selected) {
                     setState(() {
-                      value = selected ? 3 : null;
+                      choiceChipValue = selected ? 3 : null;
+                      activityPostList(context, page);
                     });
                   },
                 ),
@@ -593,15 +634,18 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                       letterSpacing: 0.27,
-                      color: value == 4 ? Colors.white : Color(0xff073278),
+                      color: choiceChipValue == 4
+                          ? Colors.white
+                          : Color(0xff073278),
                     ),
                   ),
-                  selected: value == 4,
+                  selected: choiceChipValue == 4,
                   selectedColor: Color(0xff073278),
                   backgroundColor: Colors.transparent,
                   onSelected: (bool selected) {
                     setState(() {
-                      value = selected ? 4 : null;
+                      choiceChipValue = selected ? 4 : null;
+                      activityPostList(context, page);
                     });
                   },
                 ),
@@ -617,15 +661,18 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                       letterSpacing: 0.27,
-                      color: value == 5 ? Colors.white : Color(0xff073278),
+                      color: choiceChipValue == 5
+                          ? Colors.white
+                          : Color(0xff073278),
                     ),
                   ),
-                  selected: value == 5,
+                  selected: choiceChipValue == 5,
                   selectedColor: Color(0xff073278),
                   backgroundColor: Colors.transparent,
                   onSelected: (bool selected) {
                     setState(() {
-                      value = selected ? 5 : null;
+                      choiceChipValue = selected ? 5 : null;
+                      activityPostList(context, page);
                     });
                   },
                 ),
@@ -641,16 +688,19 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                       fontWeight: FontWeight.w600,
                       fontSize: 12,
                       letterSpacing: 0.27,
-                      color: value == 6 ? Colors.white : Color(0xff073278),
+                      color: choiceChipValue == 6
+                          ? Colors.white
+                          : Color(0xff073278),
                     ),
                   ),
-                  selected: value == 6,
+                  selected: choiceChipValue == 6,
                   selectedColor: Color(0xff073278),
                   backgroundColor: Colors.transparent,
                   onSelected: (bool selected) {
                     setState(
                       () {
-                        value = selected ? 6 : null;
+                        choiceChipValue = selected ? 6 : null;
+                        activityPostList(context, page);
                       },
                     );
                   },
@@ -710,7 +760,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
     );
   }
 
-  ///////// Like Count API Calling /////////////
+  ///////// Like Count API Calling /////////////s
   activityLikePostList(BuildContext context, id) async {
     final url = baseUrl + ApiEndPoints().activityLikePostList;
 
@@ -719,7 +769,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
 
     var content = _isLiked == true ? "Unlike" : "Like";
     Map<String, String> params = {
-      'activity_id': id,
+      'activity_id': id.toString(),
       'content': content,
       'user_id': userId.toString(),
     };

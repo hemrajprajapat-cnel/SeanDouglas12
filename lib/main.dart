@@ -10,7 +10,7 @@ import './splash_screen.dart';
 import './login/forgot_password.dart';
 import './agreement/privacy_policy.dart';
 import 'agreement/termsofservice.dart';
-import 'activity/addpost.dart';
+// import 'activity/addpost.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

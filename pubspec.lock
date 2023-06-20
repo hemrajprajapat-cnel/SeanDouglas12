@@ -69,18 +69,18 @@ packages:
     dependency: transitive
     description:
       name: chewie
-      sha256: e9da4898ee4859825404f507969f57113c04ca0060e152b95c9afd73934126ad
+      sha256: "745e81e84c6d7f3835f89f85bb49771c0a66099e4caf8f8e9e9a372bc66fb2c1"
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.0"
+    version: "1.5.0"
   chewie_audio:
     dependency: transitive
     description:
       name: chewie_audio
-      sha256: f92bb4364ced21318e1a7c0eddaf249a7554e5cf27f869d58c44d926abd292a7
+      sha256: "73948a8b9841d050433af3498a1f8b11320bd5a2cd70b449bdbe16d4405e97c5"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.0"
+    version: "1.5.0"
   clock:
     dependency: transitive
     description:
@@ -165,10 +165,10 @@ packages:
     dependency: transitive
     description:
       name: csslib
-      sha256: b36c7f7e24c0bdf1bf9a3da461c837d1de64b9f8beb190c9011d8c72a3dfd745
+      sha256: "831883fb353c8bdc1d71979e5b342c7d88acfbc643113c14ae51e2442ea0f20f"
       url: "https://pub.dev"
     source: hosted
-    version: "0.17.2"
+    version: "0.17.3"
   cupertino_icons:
     dependency: "direct main"
     description:
@@ -348,10 +348,10 @@ packages:
     dependency: transitive
     description:
       name: html
-      sha256: "79d498e6d6761925a34ee5ea8fa6dfef38607781d2fa91e37523474282af55cb"
+      sha256: "58e3491f7bf0b6a4ea5110c0c688877460d1a6366731155c4a4580e7ded773e8"
       url: "https://pub.dev"
     source: hosted
-    version: "0.15.2"
+    version: "0.15.3"
   http:
     dependency: "direct main"
     description:
@@ -798,7 +798,7 @@ packages:
     source: hosted
     version: "0.7.0"
   video_player:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: video_player
       sha256: de95f0e9405f29b5582573d4166132e71f83b3158aac14e8ee5767a54f4f1fbd
@@ -809,18 +809,18 @@ packages:
     dependency: transitive
     description:
       name: video_player_android
-      sha256: a592048a711d5739d9cea2255d425779f138d41095b9149bda60ce4bc1af8871
+      sha256: ae1c7d9a71c236a1bf9e567bd7ed4c90887e389a5f233b2192593f7f7395005c
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.4"
+    version: "2.4.8"
   video_player_avfoundation:
     dependency: transitive
     description:
       name: video_player_avfoundation
-      sha256: af308d08c672d5ff718c60127665249617c37a709cb8f0a18dd28a0360299b7c
+      sha256: "4c274e439f349a0ee5cb3c42978393ede173a443b98f50de6ffe6900eaa19216"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.3"
+    version: "2.4.6"
   video_player_platform_interface:
     dependency: transitive
     description:
@@ -934,5 +934,5 @@ packages:
     source: hosted
     version: "5.4.1"
 sdks:
-  dart: ">=2.18.0 <3.0.0"
+  dart: ">=2.19.0 <3.0.0"
   flutter: ">=3.3.0"

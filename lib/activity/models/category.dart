@@ -19,6 +19,7 @@ class ActivityPostListResponse {
     status = json['status'];
     error_code = json['error_code'];
     message = json['message'];
+
     json['data'].forEach((v) {
       activityPostList!.add(ActivityPostList.fromJson(v));
     });
@@ -26,7 +27,7 @@ class ActivityPostListResponse {
 }
 
 class ActivityPostList {
-  String? id;
+  int? id;
   String? user_name;
   String? author_image;
   String? type;
@@ -115,8 +116,8 @@ class ActivityLikePostListResponse {
     this.content,
     this.like_count,
     // this.tooltip,
-    this.fav_count,
     this.like_c_user,
+    this.fav_count,
   });
 
   ActivityLikePostListResponse.fromjson(Map<String, dynamic> json) {
