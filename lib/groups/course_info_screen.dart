@@ -172,12 +172,9 @@ class _CourseInfoScreenState extends State<CourseInfoScreen>
               .add(GroupPhotoResponse.fromJson(jsonDecode(value)));
 
           GroupPhotoResponse groupPhotoRes = groupPhotoResponse[0];
-          print("rrrrrrr");
-          print(groupPhotoRes.status);
-          print(groupPhotoRes.error_code);
-          print(groupPhotoRes.message);
+         
           customDialog(context, message: groupPhotoRes.message.toString());
-          print(jsonDecode(value));
+        
         },
       );
     } else {

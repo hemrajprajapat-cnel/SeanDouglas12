@@ -26,62 +26,32 @@ class LibraryGetListResponse {
 }
 
 class LibraryGetList {
-  String? user_name;
-  String? author_image;
-  String? id;
-  String? type;
-  String? content;
-  String? primary_link;
-  String? like_content;
-  String? like_count;
-  String? like_tooltip;
-  int? totel_comment;
-  bool? like_c_user;
+  int? id;
+  String? post_title;
+  String? post_content;
+  String? image;  
 
   LibraryGetList({
-    this.user_name,
-    this.author_image,
     this.id,
-    this.type,
-    this.content,
-    this.primary_link,
-    this.like_content,
-    this.like_count,
-    this.like_tooltip,
-    this.totel_comment,
-    this.like_c_user,
+    this.post_title,
+    this.post_content,
+    this.image    
   });
 
   LibraryGetList.fromJson(Map<String, dynamic> json) {
-    user_name = json['user_name'];
-    author_image = json['author_image'];
-    id = json['id'];
-    type = json['type'];
-    content = json['content'];
-    primary_link = json['primary_link'];
-    like_content = json['Likes']['content'];
-    like_c_user = json['Likes']['like_c_user'];
-    if (json['Likes']['like_count'] != 0) {
-      like_count = json['Likes']['like_count'];
-    } else {
-      like_count = 0.toString();
-    }
-    like_tooltip = json['Likes']['tooltip'];
-    totel_comment = json['total_comment'];
+    id = json['ID'];
+    post_title = json['post_title'];
+    post_content = json['post_content'];
+    image = json['image'];    
   }
 
   @override
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['id'] = id;
-    data['type'] = type;
-    data['content'] = content;
-    data['primary_link'] = primary_link;
-    data['like_content'] = like_content;
-    data['like_count'] = like_count;
-    data['like_tooltip'] = like_tooltip;
-    data['total_comment'] = totel_comment;
-    data['like_c_user'] = like_c_user;
+    data['post_title'] = post_title;
+    data['post_content'] = post_content;
+    data['image'] = image;  
     return data;
   }
 }

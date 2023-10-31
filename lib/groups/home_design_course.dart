@@ -17,11 +17,12 @@ class Groups extends StatefulWidget {
 }
 
 class _Groups extends State<Groups> with TickerProviderStateMixin {
-  int? value = 1;
+  int? grouptype = 1;
 
   // int _currentIndex = 1;
   var isLoading = false;
   int page = 1;
+  var searchQuery = '';
   final scrollController = ScrollController();
 
   AnimationController? animationController;
@@ -33,13 +34,21 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
     super.initState();
     scrollController.addListener(scrollPagination);
     setState(() {
-      getGroupList(context, page, value);
+      getGroupList(context, page, grouptype);
     });
   }
 
   Future<bool> getData() async {
     await Future<dynamic>.delayed(const Duration(milliseconds: 200));
     return true;
+  }
+
+  void onChoiceChipValueChanged(int newValue) {
+    setState(() {
+      grouptype = newValue;
+    });
+    tempGroupCourse = [];
+    getGroupList(context, 1, newValue);
   }
 
   void scrollPagination() async {
@@ -50,7 +59,7 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
         isLoading = true;
       });
       page = page + 1;
-      await getGroupList(context, page, value);
+      await getGroupList(context, page, grouptype);
       setState(() {
         isLoading = false;
       });
@@ -60,26 +69,28 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
   List<ListGetGroup> groupCourse = [];
   List<ListGetGroup> tempGroupCourse = [];
 
-  Future<void> getGroupList(BuildContext context, Page, value) async {
-    List<GroupListResponse>? groupListResponse;
+  Future<void> getGroupList(BuildContext context, pages, type) async {
+    List<GroupListResponse>? groupListResponse;    
+    List<ListGetGroup> groupCourse = [];
 
     isLoading = true;
+    
     final url = baseUrl + ApiEndPoints().getGroupList;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getInt('isUserId');
-
+ 
     var response;
-    if (value == 1) {
+    if (type == 1) {      
       response = await http.get(Uri.parse(
-          "$url?task=activity_group_list&user_id=$user_id&page=$Page"));
-    } else if (value == 2) {
+          "$url&user_id=&search=$searchQuery&page=$pages"));
+    } else if (type == 2) {         
       response =
-          await http.get(Uri.parse("$url?task=my_group_list&user_id=856"));
+          await http.get(Uri.parse("$url&user_id=$user_id&search=$searchQuery&page=$pages"));
     }
 
     isLoading = false;
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200) {      
       List<GroupListResponse> groupListResponse = [];
       List<ListGetGroup> listGetGroup = [];
 
@@ -90,6 +101,7 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
       if (groupRes.status == "true" && groupRes.error_code == "0") {
         if (groupRes.listGetGroup != null) {
           var data = groupRes.listGetGroup;
+          
           for (var e in data!) {
             groupCourse.add(e);
           }
@@ -117,7 +129,7 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
                     getAppBarUI(),
                     StickyHeader(
                       header: Container(
-                        child: getSearchBarUI(),
+                        child: getSearchBarUI(context),
                       ),
                       content: Container(
                         child: Column(
@@ -190,7 +202,7 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            CourseInfoScreen(ListGetGroup.Id),
+                                            CourseInfoScreen(ListGetGroup.id),
                                       ),
                                     );
                                   },
@@ -242,7 +254,7 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
                                                                               16),
                                                                       child:
                                                                           AutoSizeText(
-                                                                        "${ListGetGroup.Title}",
+                                                                        "${ListGetGroup.title}",
                                                                         textAlign:
                                                                             TextAlign.left,
                                                                         style:
@@ -281,7 +293,7 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
                                                                         children: <
                                                                             Widget>[
                                                                           Text(
-                                                                            " ${ListGetGroup.Status}",
+                                                                            " ${ListGetGroup.status}",
                                                                             textAlign:
                                                                                 TextAlign.left,
                                                                             style:
@@ -293,7 +305,7 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
                                                                             ),
                                                                           ),
                                                                           AutoSizeText(
-                                                                            " ${ListGetGroup.Time}",
+                                                                            " ${ListGetGroup.time}",
                                                                             textAlign:
                                                                                 TextAlign.start,
                                                                             minFontSize:
@@ -372,8 +384,7 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
                                                           image: NetworkImage(
                                                               // "https://sample-videos.com/img/Sample-png-image-100kb.png",
                                                               // 'https://readyforyourreview.com/SeanDouglas12/wp-content/uploads/2021/08/OFC-Learn-Gradient-Filled-Horizontal-1536x842.png',
-                                                              ListGetGroup
-                                                                      .Image_link
+                                                              ListGetGroup.image_link
                                                                   .toString()),
                                                           width: 300,
                                                           height: 180,
@@ -436,7 +447,7 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
   //   );
   // }
 
-  Widget getSearchBarUI() {
+  Widget getSearchBarUI(context) {
     return Padding(
       padding: const EdgeInsets.only(left: 18),
       child: Row(
@@ -464,6 +475,14 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
                       child: Container(
                         padding: const EdgeInsets.only(left: 8, right: 8),
                         child: TextFormField(
+                          onChanged: (value) {
+                            setState(() {
+                              searchQuery = value;
+                              if (value.length >= 3 || value.isEmpty) {                                
+                                getGroupList(context, page, grouptype);
+                              }
+                            });
+                          },
                           style: TextStyle(
                             fontFamily: 'Hind',
                             fontWeight: FontWeight.bold,
@@ -472,7 +491,9 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
                           ),
                           keyboardType: TextInputType.text,
                           decoration: InputDecoration(
-                            labelText: 'Search for Groups',
+                            labelText: searchQuery.isNotEmpty && searchQuery.length < 3
+                                    ? 'Please enter minimum 3 characters'
+                                    : 'Search for group',
                             border: InputBorder.none,
                             helperStyle: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -483,7 +504,10 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
                               fontWeight: FontWeight.w600,
                               fontSize: 16,
                               letterSpacing: 0.2,
-                              color: HexColor('#B9BABC'),
+                              color: searchQuery.isNotEmpty &&
+                                      searchQuery.length < 3
+                                  ? HexColor('#FF9494')
+                                  : HexColor('#B9BABC'),
                             ),
                           ),
                           onEditingComplete: () {},
@@ -543,18 +567,18 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
                             fontWeight: FontWeight.w600,
                             fontSize: 12,
                             letterSpacing: 0.27,
-                            color: value == 1
+                            color: grouptype == 1
                                 ? Color.fromRGBO(255, 255, 255, 1)
                                 : Color(0xff073278),
                           ),
                         ),
-                        selected: value == 1,
+                        selected: grouptype == 1,
                         selectedColor: Color(0xff073278),
                         backgroundColor: Colors.transparent,
-                        onSelected: (bool selected) {
-                          setState(() {
-                            value = selected ? 1 : null;
-                          });
+                        onSelected: (bool selected) {                         
+                          if (selected) {
+                            onChoiceChipValueChanged(1);
+                          }
                         },
                       ),
                       SizedBox(
@@ -570,16 +594,16 @@ class _Groups extends State<Groups> with TickerProviderStateMixin {
                             fontSize: 12,
                             letterSpacing: 0.27,
                             color:
-                                value == 2 ? Colors.white : Color(0xff073278),
+                                grouptype == 2 ? Colors.white : Color(0xff073278),
                           ),
                         ),
-                        selected: value == 2,
+                        selected: grouptype == 2,
                         selectedColor: Color(0xff073278),
                         backgroundColor: Colors.transparent,
                         onSelected: (bool selected) {
-                          setState(() {
-                            value = selected ? 2 : null;
-                          });
+                          if (selected) {
+                            onChoiceChipValueChanged(2);
+                          }
                         },
                       ),
                     ],

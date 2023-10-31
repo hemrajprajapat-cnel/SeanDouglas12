@@ -171,10 +171,10 @@ class _CategoryView extends State<CategoryView> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CourseInfoScreen(index),
+                              builder: (context) =>
+                                  CourseInfoScreen(eventListData!.id),
                             ),
                           );
-                          // await getEventDetails(context, eventListData!.id);
                         },
                         child: SizedBox(
                           height: 280,
@@ -299,14 +299,24 @@ class _CategoryView extends State<CategoryView> {
                                           Radius.circular(16.0)),
                                       child: AspectRatio(
                                         aspectRatio: 1.28,
-                                        child: Image(
-                                          image: NetworkImage(
-                                            "${eventListData!.event_thumbnail_image_link}",
-                                          ),
-                                          width: 300,
-                                          height: 180,
-                                          fit: BoxFit.fill,
-                                        ),
+                                        child: eventListData
+                                                    .event_thumbnail_image_link !=
+                                                null
+                                            ? Image(
+                                                image: NetworkImage(
+                                                  "${eventListData!.event_thumbnail_image_link}",
+                                                ),
+                                                width: 300,
+                                                height: 180,
+                                                fit: BoxFit.fill,
+                                              )
+                                            : Image(
+                                                image: AssetImage(
+                                                    'assets/images/images.png'),
+                                                width: double.infinity,
+                                                height: 180,
+                                                fit: BoxFit.fill,
+                                              ),
                                       ),
                                     ),
                                   ),

@@ -4,7 +4,10 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:best_flutter_ui_templates/api/api.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 class CategoryListView extends StatefulWidget {
   const CategoryListView({Key? key, this.callBack}) : super(key: key);
@@ -17,6 +20,7 @@ class CategoryListView extends StatefulWidget {
 class _CategoryListViewState extends State<CategoryListView>
     with TickerProviderStateMixin {
   AnimationController? animationController;
+
   bool isLoading = false;
   @override
   void initState() {
@@ -48,8 +52,11 @@ class _CategoryListViewState extends State<CategoryListView>
       isLoading = true;
     });
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userId = prefs.getInt('isUserId');
+
     var url = baseUrl + ApiEndPoints().previousEventList;
-    var response = await http.get(Uri.parse(url));
+    var response = await http.get(Uri.parse("$url&user_id=$userId&page=1"));
 
     setState(() {
       isLoading = false;
@@ -152,40 +159,9 @@ class CategoryView extends StatefulWidget {
 
 class _CategoryViewState extends State<CategoryView>
     with TickerProviderStateMixin {
-  late VideoPlayerController _controller;
-
   @override
   void initState() {
     super.initState();
-    var _controller;
-  }
-
-  void _showVideoPopup() async {
-    await showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        contentPadding: EdgeInsets.zero,
-        content: SingleChildScrollView(
-          child: Column(
-            children: [
-              AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            child: Text('Close'),
-            onPressed: () {
-              _controller.pause();
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -270,8 +246,12 @@ class _CategoryViewState extends State<CategoryView>
                                               Row(
                                                 children: <Widget>[
                                                   AutoSizeText(
-                                                    widget.previuoslist!
-                                                        .event_start_date,
+                                                    widget.previuoslist
+                                                                .event_start_date !=
+                                                            null
+                                                        ? widget.previuoslist
+                                                            .event_start_date
+                                                        : "",
                                                     textAlign: TextAlign.left,
                                                     style: TextStyle(
                                                       fontWeight:
@@ -286,75 +266,99 @@ class _CategoryViewState extends State<CategoryView>
                                                   ),
                                                 ],
                                               ),
-                                              Padding(
-                                                padding: const EdgeInsets.only(
-                                                    bottom: 16, right: 16),
-                                                child: Row(
-                                                  children: <Widget>[
-                                                    GestureDetector(
-                                                      onTap: () {
-                                                        _controller =
-                                                            VideoPlayerController
-                                                                .network(
-                                                                    'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4')
-                                                              ..initialize()
-                                                                  .then((_) {
-                                                                setState(() {});
-                                                              });
-                                                        _showVideoPopup();
-                                                        _controller.play();
-                                                      },
-                                                      child: Container(
-                                                        decoration:
-                                                            BoxDecoration(
-                                                          color:
-                                                              Color(0xff66C23D),
-                                                          borderRadius:
-                                                              BorderRadius.all(
-                                                                  Radius
-                                                                      .circular(
-                                                                          8.0)),
-                                                          boxShadow: [
-                                                            BoxShadow(
-                                                                color: Color
-                                                                    .fromARGB(
-                                                                        255,
-                                                                        156,
-                                                                        151,
-                                                                        151), // Change color of the shadow
-                                                                blurRadius:
-                                                                    10.0,
-                                                                spreadRadius:
-                                                                    2.0,
-                                                                offset: Offset(
-                                                                    2.0, 2.0))
-                                                          ],
-                                                        ),
-                                                        child: Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(4),
-                                                          child: Text(
-                                                            'Click to view - Recording',
-                                                            textAlign:
-                                                                TextAlign.left,
-                                                            style: TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w600,
-                                                              fontSize: 10,
-                                                              letterSpacing:
-                                                                  0.27,
-                                                              color:
-                                                                  Colors.white,
+                                              widget.previuoslist.erv_link != ""
+                                                  ? Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              bottom: 16,
+                                                              right: 16),
+                                                      child: Row(
+                                                        children: <Widget>[
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              showDialog(
+                                                                context:
+                                                                    context,
+                                                                builder: (_) =>
+                                                                    AlertDialog(
+                                                                  contentPadding:
+                                                                      EdgeInsets
+                                                                          .zero,
+                                                                  content:
+                                                                      Container(
+                                                                    height: 300,
+                                                                    child:
+                                                                        WebView(
+                                                                      initialUrl:
+                                                                          '${widget.previuoslist.erv_link}',
+                                                                      javascriptMode:
+                                                                          JavascriptMode
+                                                                              .unrestricted,
+                                                                    ),
+                                                                  ),
+                                                                  actions: [],
+                                                                ),
+                                                              );
+                                                            },
+                                                            child: Container(
+                                                              decoration:
+                                                                  BoxDecoration(
+                                                                color: Color(
+                                                                    0xff66C23D),
+                                                                borderRadius: BorderRadius
+                                                                    .all(Radius
+                                                                        .circular(
+                                                                            8.0)),
+                                                                boxShadow: [
+                                                                  BoxShadow(
+                                                                      color: Color.fromARGB(
+                                                                          255,
+                                                                          156,
+                                                                          151,
+                                                                          151), // Change color of the shadow
+                                                                      blurRadius:
+                                                                          10.0,
+                                                                      spreadRadius:
+                                                                          2.0,
+                                                                      offset: Offset(
+                                                                          2.0,
+                                                                          2.0))
+                                                                ],
+                                                              ),
+                                                              child: Padding(
+                                                                padding:
+                                                                    const EdgeInsets
+                                                                        .all(4),
+                                                                child: Text(
+                                                                  'Click to view - Recording',
+                                                                  textAlign:
+                                                                      TextAlign
+                                                                          .left,
+                                                                  style:
+                                                                      TextStyle(
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .w600,
+                                                                    fontSize:
+                                                                        10,
+                                                                    letterSpacing:
+                                                                        0.27,
+                                                                    color: Colors
+                                                                        .white,
+                                                                  ),
+                                                                ),
+                                                              ),
                                                             ),
                                                           ),
-                                                        ),
+                                                        ],
                                                       ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
+                                                    )
+                                                  : Padding(
+                                                      padding:
+                                                          const EdgeInsets.only(
+                                                              bottom: 16,
+                                                              right: 16),
+                                                    )
                                             ],
                                           ),
                                         ),
@@ -374,19 +378,30 @@ class _CategoryViewState extends State<CategoryView>
                           child: Row(
                             children: <Widget>[
                               ClipRRect(
-                                  borderRadius: const BorderRadius.all(
-                                      Radius.circular(16.0)),
-                                  child: AspectRatio(
-                                    aspectRatio: 1.0,
-                                    child: Image(
-                                      image: NetworkImage(
-                                        "${widget.previuoslist!.event_thumbnail_image_link}",
-                                      ),
-                                      width: 300,
-                                      height: 180,
-                                      fit: BoxFit.fill,
-                                    ),
-                                  ))
+                                borderRadius: const BorderRadius.all(
+                                    Radius.circular(16.0)),
+                                child: AspectRatio(
+                                  aspectRatio: 1.0,
+                                  child: widget.previuoslist
+                                              .event_thumbnail_image_link !=
+                                          null
+                                      ? Image(
+                                          image: NetworkImage(
+                                            "${widget.previuoslist!.event_thumbnail_image_link}",
+                                          ),
+                                          width: 300,
+                                          height: 180,
+                                          fit: BoxFit.fill,
+                                        )
+                                      : Image(
+                                          image: AssetImage(
+                                              'assets/images/images.png'),
+                                          width: double.infinity,
+                                          height: 180,
+                                          fit: BoxFit.fill,
+                                        ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -405,6 +420,5 @@ class _CategoryViewState extends State<CategoryView>
   @override
   void dispose() {
     super.dispose();
-    _controller.dispose();
   }
 }

@@ -32,7 +32,9 @@ class _Library extends State<Library> with TickerProviderStateMixin {
   var isLoading = false;
   int page = 1;
   var commentType = "L";
-  var _isLiked = false;
+  int? choiceChipValue = 1;
+  var searchQuery = '';
+
   @override
   void initState() {
     animationController = AnimationController(
@@ -54,26 +56,45 @@ class _Library extends State<Library> with TickerProviderStateMixin {
     BuildContext context,
     page,
   ) async {
-    List<LibraryGetListResponse>? libraryGetListResponse;
+    List<LibraryGetListResponse>? libraryGetListResponse;   
     isLoading = true;
     final url = baseUrl + ApiEndPoints().libraryGetList;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var user_id = prefs.getInt('isUserId');
 
+    String scopeVal = '';
+    switch (choiceChipValue) {
+      case 1:
+        scopeVal = 'Administration';
+        break;
+      case 2:
+        scopeVal = 'Coaching';
+        break;
+      case 3:
+        scopeVal = 'Medical';
+        break;
+      case 4:
+        scopeVal = 'Officials';
+        break;
+      default:
+        scopeVal = '';
+    }
+
     var response =
-        await http.get(Uri.parse("$url&user_id=$user_id&page=$page"));
+        await http.get(Uri.parse("$url&user_id=$user_id&search=$searchQuery&category=$scopeVal&page=$page"));
     isLoading = false;
 
     if (response.statusCode == 200) {
-      List<LibraryGetListResponse> libraryGetListResponse = [];
-      List<LibraryGetList> libraryGetList = [];
+      List<LibraryGetListResponse> libraryGetListResponse = [];      
       libraryGetListResponse
           .add(LibraryGetListResponse.fromJson(jsonDecode(response.body)));
       LibraryGetListResponse userResponse = libraryGetListResponse[0];
-
+ 
       if (userResponse.status == "true" && userResponse.error_code == "0") {
-        if (userResponse.libraryGetList != null) {
+        if (userResponse.libraryGetList != null) {          
           var data = userResponse.libraryGetList;
+          List<LibraryGetList> libraryList = [];
+
           for (var e in data!) {
             libraryList.add(e);
           }
@@ -100,6 +121,14 @@ class _Library extends State<Library> with TickerProviderStateMixin {
         isLoading = false;
       });
     }
+  }
+
+  void onChoiceChipValueChanged(int newValue) {
+    setState(() {
+      choiceChipValue = newValue;
+    });
+    tempLibraryList = [];
+    libraryGetList(context, page);
   }
 
   @override
@@ -171,10 +200,15 @@ class _Library extends State<Library> with TickerProviderStateMixin {
 
                     LibraryGetList librarylist = tempLibraryList[index];
 
-                    RegExp exp = RegExp(r"<[^>]*>",
+                    // Remove HTML tags
+                    RegExp htmlTagsExp = RegExp(r"<[^>]*>",
                         multiLine: true, caseSensitive: true);
-                    String content = librarylist.content!.replaceAll(exp, '');
-                    bool _like_c_user = librarylist.like_c_user == true;
+                    String contentWithoutHtml =
+                        librarylist.post_content!.replaceAll(htmlTagsExp, '');
+
+                    // Remove extra spaces between paragraphs
+                    String content =
+                        contentWithoutHtml.replaceAll(RegExp(r'\n+'), '\n');
 
                     return AnimatedBuilder(
                       animation: animationController!,
@@ -213,12 +247,12 @@ class _Library extends State<Library> with TickerProviderStateMixin {
                                                       const EdgeInsets.all(5),
                                                 ),
 
-                                                CircleAvatar(
-                                                  radius: 20,
-                                                  backgroundImage: NetworkImage(
-                                                    "${librarylist.author_image}",
-                                                  ),
-                                                ),
+                                                // CircleAvatar(
+                                                //   radius: 20,
+                                                //   backgroundImage: NetworkImage(
+                                                //     "${librarylist.image}",
+                                                //   ),
+                                                // ),
 
                                                 // CircleAvatar(
                                                 //   radius: 20,
@@ -233,7 +267,7 @@ class _Library extends State<Library> with TickerProviderStateMixin {
                                                   child: Padding(
                                                     padding:
                                                         const EdgeInsets.only(
-                                                      left: 8,
+                                                      left: 0,
                                                     ),
                                                     child: Column(
                                                       mainAxisSize:
@@ -243,7 +277,7 @@ class _Library extends State<Library> with TickerProviderStateMixin {
                                                               .start,
                                                       children: <Widget>[
                                                         Text(
-                                                          "${librarylist.user_name}",
+                                                          "${librarylist.post_title}",
                                                           style: const TextStyle(
                                                               fontWeight:
                                                                   FontWeight
@@ -255,26 +289,29 @@ class _Library extends State<Library> with TickerProviderStateMixin {
                                                     ),
                                                   ),
                                                 ),
-                                                Padding(
-                                                  padding: EdgeInsets.all(8),
-                                                  child: Text(
-                                                    "25/02/2022",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                        color:
-                                                            Color(0xff073278)),
-                                                  ),
-                                                ),
+                                                // Padding(
+                                                //   padding: EdgeInsets.all(8),
+                                                //   child: Text(
+                                                //     "25/02/2022",
+                                                //     style: TextStyle(
+                                                //         fontWeight:
+                                                //             FontWeight.w600,
+                                                //         color:
+                                                //             Color(0xff073278)),
+                                                //   ),
+                                                // ),
                                               ]),
                                           Padding(
                                             padding: EdgeInsets.only(
-                                                top: 10, left: 10, right: 10),
+                                                top: 0,
+                                                left: 10,
+                                                right: 10,
+                                                bottom: 10),
                                             child: AutoSizeText(
                                               content,
                                               textAlign: TextAlign.left,
                                               minFontSize: 15,
-                                              maxLines: 5,
+                                              maxLines: 15,
                                               overflow: TextOverflow.ellipsis,
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w500,
@@ -289,7 +326,7 @@ class _Library extends State<Library> with TickerProviderStateMixin {
                                                 padding: EdgeInsets.all(12),
                                                 child: Image(
                                                   image: NetworkImage(
-                                                    'https://readyforyourreview.com/SeanDouglas12/wp-content/uploads/2021/08/OFC-Learn-Gradient-Filled-Horizontal-1536x842.png',
+                                                    '${librarylist.image}',
                                                   ),
                                                   width: 300,
                                                   height: 180,
@@ -349,29 +386,29 @@ class _Library extends State<Library> with TickerProviderStateMixin {
                                             //   },
                                             // ),
 
-                                            IconButton(
-                                              icon: const Icon(
-                                                Icons.comment_outlined,
-                                              ),
-                                              onPressed: () => {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        Postcomment(
-                                                            librarylist.id,
-                                                            commentType),
-                                                  ),
-                                                ),
-                                              },
-                                              color: Color(0xff073278),
-                                            ),
-                                            Text(
-                                              "${librarylist.totel_comment}",
-                                              style: TextStyle(
-                                                color: Color(0xff073278),
-                                              ),
-                                            )
+                                            // IconButton(
+                                            //   icon: const Icon(
+                                            //     Icons.comment_outlined,
+                                            //   ),
+                                            //   onPressed: () => {
+                                            //     Navigator.push(
+                                            //       context,
+                                            //       MaterialPageRoute(
+                                            //         builder: (context) =>
+                                            //             Postcomment(
+                                            //                 librarylist.id,
+                                            //                 commentType),
+                                            //       ),
+                                            //     ),
+                                            //   },
+                                            //   color: Color(0xff073278),
+                                            // ),
+                                            // Text(
+                                            //   "${librarylist.totel_comment}",
+                                            //   style: TextStyle(
+                                            //     color: Color(0xff073278),
+                                            //   ),
+                                            // )
                                           ]),
                                           // Column(
                                           //   children: [
@@ -479,219 +516,321 @@ class _Library extends State<Library> with TickerProviderStateMixin {
             child: ListView(
               scrollDirection: Axis.horizontal,
               children: <Widget>[
-                if (_currentIndex == 1) ...[
-                  TextButton(
-                    child: Text(
-                      "Administration",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        letterSpacing: 0.27,
-                      ),
+                // if (_currentIndex == 1) ...[
+                //   TextButton(
+                //     child: Text(
+                //       "Administration",
+                //       style: TextStyle(
+                //         fontWeight: FontWeight.w600,
+                //         fontSize: 12,
+                //         letterSpacing: 0.27,
+                //       ),
+                //     ),
+                //     style: ButtonStyle(
+                //       padding: MaterialStateProperty.all<EdgeInsets>(
+                //           EdgeInsets.only(
+                //               top: 10, bottom: 10, left: 15, right: 15)),
+                //       foregroundColor:
+                //           MaterialStateProperty.all<Color>(Colors.white),
+                //       backgroundColor:
+                //           MaterialStateProperty.all<Color>(Color(0xff073278)),
+                //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                //         RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(25.0),
+                //             side: BorderSide(color: Color(0xff073278))),
+                //       ),
+                //     ),
+                //     onPressed: () => onTappedBar(1),
+                //   ),
+                // ] else ...[
+                //   TextButton(
+                //     child: Text(
+                //       "Administration",
+                //       style: TextStyle(
+                //         fontWeight: FontWeight.w600,
+                //         fontSize: 12,
+                //         letterSpacing: 0.27,
+                //       ),
+                //     ),
+                //     style: ButtonStyle(
+                //       padding: MaterialStateProperty.all<EdgeInsets>(
+                //           EdgeInsets.only(
+                //               top: 10, bottom: 10, left: 15, right: 15)),
+                //       foregroundColor:
+                //           MaterialStateProperty.all<Color>(Color(0xff073278)),
+                //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                //         RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(25.0),
+                //             side: BorderSide(color: Color(0xff073278))),
+                //       ),
+                //     ),
+                //     onPressed: () => onTappedBar(1),
+                //   ),
+                // ],
+                // const SizedBox(
+                //   width: 16,
+                // ),
+                // if (_currentIndex == 2) ...[
+                //   TextButton(
+                //     child: Text(
+                //       "Coaching",
+                //       style: TextStyle(
+                //         fontWeight: FontWeight.w600,
+                //         fontSize: 12,
+                //         letterSpacing: 0.27,
+                //       ),
+                //     ),
+                //     style: ButtonStyle(
+                //       padding: MaterialStateProperty.all<EdgeInsets>(
+                //           EdgeInsets.only(
+                //               top: 10, bottom: 10, left: 15, right: 15)),
+                //       foregroundColor:
+                //           MaterialStateProperty.all<Color>(Colors.white),
+                //       backgroundColor:
+                //           MaterialStateProperty.all<Color>(Color(0xff073278)),
+                //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                //         RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(25.0),
+                //             side: BorderSide(color: Color(0xff073278))),
+                //       ),
+                //     ),
+                //     onPressed: () => onTappedBar(2),
+                //   ),
+                // ] else ...[
+                //   TextButton(
+                //     child: Text(
+                //       "Coaching",
+                //       style: TextStyle(
+                //         fontWeight: FontWeight.w600,
+                //         fontSize: 12,
+                //         letterSpacing: 0.27,
+                //       ),
+                //     ),
+                //     style: ButtonStyle(
+                //       padding: MaterialStateProperty.all<EdgeInsets>(
+                //           EdgeInsets.only(
+                //               top: 10, bottom: 10, left: 15, right: 15)),
+                //       foregroundColor:
+                //           MaterialStateProperty.all<Color>(Color(0xff073278)),
+                //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                //         RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(25.0),
+                //             side: BorderSide(color: Color(0xff073278))),
+                //       ),
+                //     ),
+                //     onPressed: () => onTappedBar(2),
+                //   ),
+                // ],
+                // const SizedBox(
+                //   width: 16,
+                // ),
+                // if (_currentIndex == 3) ...[
+                //   TextButton(
+                //     child: Text(
+                //       "Medical",
+                //       style: TextStyle(
+                //         fontWeight: FontWeight.w600,
+                //         fontSize: 12,
+                //         letterSpacing: 0.27,
+                //       ),
+                //     ),
+                //     style: ButtonStyle(
+                //       padding: MaterialStateProperty.all<EdgeInsets>(
+                //           EdgeInsets.only(
+                //               top: 10, bottom: 10, left: 15, right: 15)),
+                //       foregroundColor:
+                //           MaterialStateProperty.all<Color>(Colors.white),
+                //       backgroundColor:
+                //           MaterialStateProperty.all<Color>(Color(0xff073278)),
+                //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                //         RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(25.0),
+                //             side: BorderSide(color: Color(0xff073278))),
+                //       ),
+                //     ),
+                //     onPressed: () => onTappedBar(3),
+                //   ),
+                // ] else ...[
+                //   TextButton(
+                //     child: Text(
+                //       "Medical",
+                //       style: TextStyle(
+                //         fontWeight: FontWeight.w600,
+                //         fontSize: 12,
+                //         letterSpacing: 0.27,
+                //       ),
+                //     ),
+                //     style: ButtonStyle(
+                //       padding: MaterialStateProperty.all<EdgeInsets>(
+                //           EdgeInsets.only(
+                //               top: 10, bottom: 10, left: 15, right: 15)),
+                //       foregroundColor:
+                //           MaterialStateProperty.all<Color>(Color(0xff073278)),
+                //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                //         RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(25.0),
+                //             side: BorderSide(color: Color(0xff073278))),
+                //       ),
+                //     ),
+                //     onPressed: () => onTappedBar(3),
+                //   ),
+                // ],
+                // const SizedBox(
+                //   width: 16,
+                // ),
+                // if (_currentIndex == 4) ...[
+                //   TextButton(
+                //     child: Text(
+                //       "Officials",
+                //       style: TextStyle(
+                //         fontWeight: FontWeight.w600,
+                //         fontSize: 12,
+                //         letterSpacing: 0.27,
+                //       ),
+                //     ),
+                //     style: ButtonStyle(
+                //       padding: MaterialStateProperty.all<EdgeInsets>(
+                //           EdgeInsets.only(
+                //               top: 10, bottom: 10, left: 15, right: 15)),
+                //       foregroundColor:
+                //           MaterialStateProperty.all<Color>(Colors.white),
+                //       backgroundColor:
+                //           MaterialStateProperty.all<Color>(Color(0xff073278)),
+                //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                //         RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(25.0),
+                //             side: BorderSide(color: Color(0xff073278))),
+                //       ),
+                //     ),
+                //     onPressed: () => onTappedBar(4),
+                //   ),
+                // ] else ...[
+                //   TextButton(
+                //     child: Text(
+                //       "Officials",
+                //       style: TextStyle(
+                //         fontWeight: FontWeight.w600,
+                //         fontSize: 12,
+                //         letterSpacing: 0.27,
+                //       ),
+                //     ),
+                //     style: ButtonStyle(
+                //       padding: MaterialStateProperty.all<EdgeInsets>(
+                //           EdgeInsets.only(
+                //               top: 10, bottom: 10, left: 15, right: 15)),
+                //       foregroundColor:
+                //           MaterialStateProperty.all<Color>(Color(0xff073278)),
+                //       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                //         RoundedRectangleBorder(
+                //             borderRadius: BorderRadius.circular(25.0),
+                //             side: BorderSide(color: Color(0xff073278))),
+                //       ),
+                //     ),
+                //     onPressed: () => onTappedBar(4),
+                //   ),
+                // ],
+
+                ChoiceChip(
+                  padding:
+                      EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
+                  label: Text(
+                    'Administration',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      letterSpacing: 0.27,
+                      color: choiceChipValue == 1
+                          ? Colors.white
+                          : Color(0xff073278),
                     ),
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                          EdgeInsets.only(
-                              top: 10, bottom: 10, left: 15, right: 15)),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Color(0xff073278)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25.0),
-                            side: BorderSide(color: Color(0xff073278))),
-                      ),
-                    ),
-                    onPressed: () => onTappedBar(1),
                   ),
-                ] else ...[
-                  TextButton(
-                    child: Text(
-                      "Administration",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        letterSpacing: 0.27,
-                      ),
-                    ),
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                          EdgeInsets.only(
-                              top: 10, bottom: 10, left: 15, right: 15)),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Color(0xff073278)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25.0),
-                            side: BorderSide(color: Color(0xff073278))),
-                      ),
-                    ),
-                    onPressed: () => onTappedBar(1),
-                  ),
-                ],
-                const SizedBox(
-                  width: 16,
+                  selected: choiceChipValue == 1,
+                  selectedColor: Color(0xff073278),
+                  backgroundColor: Colors.transparent,
+                  onSelected: (bool selected) {
+                    setState(() {
+                      onChoiceChipValueChanged(1);
+                    });
+                  },
                 ),
-                if (_currentIndex == 2) ...[
-                  TextButton(
-                    child: Text(
-                      "Coaching",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        letterSpacing: 0.27,
-                      ),
-                    ),
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                          EdgeInsets.only(
-                              top: 10, bottom: 10, left: 15, right: 15)),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Color(0xff073278)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25.0),
-                            side: BorderSide(color: Color(0xff073278))),
-                      ),
-                    ),
-                    onPressed: () => onTappedBar(2),
-                  ),
-                ] else ...[
-                  TextButton(
-                    child: Text(
-                      "Coaching",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        letterSpacing: 0.27,
-                      ),
-                    ),
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                          EdgeInsets.only(
-                              top: 10, bottom: 10, left: 15, right: 15)),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Color(0xff073278)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25.0),
-                            side: BorderSide(color: Color(0xff073278))),
-                      ),
-                    ),
-                    onPressed: () => onTappedBar(2),
-                  ),
-                ],
-                const SizedBox(
-                  width: 16,
+                SizedBox(
+                  width: 5,
                 ),
-                if (_currentIndex == 3) ...[
-                  TextButton(
-                    child: Text(
-                      "Medical",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        letterSpacing: 0.27,
-                      ),
+                ChoiceChip(
+                  padding:
+                      EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
+                  label: Text(
+                    'Coaching',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      letterSpacing: 0.27,
+                      color: choiceChipValue == 2
+                          ? Colors.white
+                          : Color(0xff073278),
                     ),
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                          EdgeInsets.only(
-                              top: 10, bottom: 10, left: 15, right: 15)),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Color(0xff073278)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25.0),
-                            side: BorderSide(color: Color(0xff073278))),
-                      ),
-                    ),
-                    onPressed: () => onTappedBar(3),
                   ),
-                ] else ...[
-                  TextButton(
-                    child: Text(
-                      "Medical",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        letterSpacing: 0.27,
-                      ),
-                    ),
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                          EdgeInsets.only(
-                              top: 10, bottom: 10, left: 15, right: 15)),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Color(0xff073278)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25.0),
-                            side: BorderSide(color: Color(0xff073278))),
-                      ),
-                    ),
-                    onPressed: () => onTappedBar(3),
-                  ),
-                ],
-                const SizedBox(
-                  width: 16,
+                  selected: choiceChipValue == 2,
+                  selectedColor: Color(0xff073278),
+                  backgroundColor: Colors.transparent,
+                  onSelected: (bool selected) {
+                    setState(() {
+                      onChoiceChipValueChanged(2);
+                    });
+                  },
                 ),
-                if (_currentIndex == 4) ...[
-                  TextButton(
-                    child: Text(
-                      "Officials",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        letterSpacing: 0.27,
-                      ),
+                SizedBox(
+                  width: 5,
+                ),
+                ChoiceChip(
+                  padding:
+                      EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
+                  label: Text(
+                    'Medical',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      letterSpacing: 0.27,
+                      color: choiceChipValue == 3
+                          ? Colors.white
+                          : Color(0xff073278),
                     ),
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                          EdgeInsets.only(
-                              top: 10, bottom: 10, left: 15, right: 15)),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Colors.white),
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Color(0xff073278)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25.0),
-                            side: BorderSide(color: Color(0xff073278))),
-                      ),
-                    ),
-                    onPressed: () => onTappedBar(4),
                   ),
-                ] else ...[
-                  TextButton(
-                    child: Text(
-                      "Officials",
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        letterSpacing: 0.27,
-                      ),
+                  selected: choiceChipValue == 3,
+                  selectedColor: Color(0xff073278),
+                  backgroundColor: Colors.transparent,
+                  onSelected: (bool selected) {
+                    setState(() {
+                      onChoiceChipValueChanged(3);
+                    });
+                  },
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                ChoiceChip(
+                  padding:
+                      EdgeInsets.only(top: 10, bottom: 10, left: 15, right: 15),
+                  label: Text(
+                    'Officials',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      letterSpacing: 0.27,
+                      color: choiceChipValue == 4
+                          ? Colors.white
+                          : Color(0xff073278),
                     ),
-                    style: ButtonStyle(
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                          EdgeInsets.only(
-                              top: 10, bottom: 10, left: 15, right: 15)),
-                      foregroundColor:
-                          MaterialStateProperty.all<Color>(Color(0xff073278)),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25.0),
-                            side: BorderSide(color: Color(0xff073278))),
-                      ),
-                    ),
-                    onPressed: () => onTappedBar(4),
                   ),
-                ],
+                  selected: choiceChipValue == 4,
+                  selectedColor: Color(0xff073278),
+                  backgroundColor: Colors.transparent,
+                  onSelected: (bool selected) {
+                    setState(() {
+                      onChoiceChipValueChanged(4);
+                    });
+                  },
+                ),                               
               ],
             ),
           ),
@@ -728,6 +867,14 @@ class _Library extends State<Library> with TickerProviderStateMixin {
                       child: Container(
                         padding: const EdgeInsets.only(left: 8, right: 8),
                         child: TextFormField(
+                          onChanged: (value) {
+                            setState(() {
+                              searchQuery = value;
+                              if (value.length >= 3 || value.isEmpty) {
+                                libraryGetList(context, page);
+                              }
+                            });
+                          },
                           style: TextStyle(
                             fontFamily: 'Hind',
                             fontWeight: FontWeight.bold,
@@ -736,7 +883,9 @@ class _Library extends State<Library> with TickerProviderStateMixin {
                           ),
                           keyboardType: TextInputType.text,
                           decoration: InputDecoration(
-                            labelText: 'Search for keywords or topics',
+                            labelText:searchQuery.isNotEmpty && searchQuery.length < 3
+                                    ? 'Please enter minimum 3 characters'
+                                    : 'Search for library post',
                             border: InputBorder.none,
                             helperStyle: TextStyle(
                               fontWeight: FontWeight.bold,
@@ -747,7 +896,10 @@ class _Library extends State<Library> with TickerProviderStateMixin {
                               fontWeight: FontWeight.w600,
                               fontSize: 16,
                               letterSpacing: 0.2,
-                              color: HexColor('#B9BABC'),
+                               color: searchQuery.isNotEmpty &&
+                                      searchQuery.length < 3
+                                  ? HexColor('#FF9494')
+                                  : HexColor('#B9BABC'),                              
                             ),
                           ),
                           onEditingComplete: () {},

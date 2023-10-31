@@ -11,8 +11,8 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-
-    Timer(Duration(seconds: 5), () async {
+    
+    Timer(Duration(seconds: 3), () async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       var status = prefs.getBool('isLoggedIn');
       if (status == true) {

@@ -2,13 +2,15 @@
 
 import 'dart:convert';
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:best_flutter_ui_templates/comman/custome_dialog.dart';
 import 'package:http/http.dart' as http;
 import 'package:best_flutter_ui_templates/api/api.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../comman/design_course_app_theme.dart';
 
 class CourseInfoScreen extends StatefulWidget {
-  bool isLoading = true;
+  // bool isLoading = true;
 
   @override
   _CourseInfoScreenState createState() => _CourseInfoScreenState();
@@ -345,49 +347,58 @@ class _CourseInfoScreenState extends State<CourseInfoScreen>
                                   AnimatedOpacity(
                                     duration: const Duration(milliseconds: 500),
                                     opacity: opacity3,
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(
-                                          left: 16, bottom: 16, right: 16),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: <Widget>[
-                                          Expanded(
-                                            child: Container(
-                                              margin: EdgeInsets.only(top: 20),
-                                              height: 48,
-                                              decoration: BoxDecoration(
-                                                color: Color(0xff66C23D),
-                                                borderRadius:
-                                                    const BorderRadius.all(
-                                                  Radius.circular(16.0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        joinCourse(context, course.id);
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(
+                                            left: 16, bottom: 16, right: 16),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: <Widget>[
+                                            Expanded(
+                                              child: Container(
+                                                margin:
+                                                    EdgeInsets.only(top: 20),
+                                                height: 48,
+                                                decoration: BoxDecoration(
+                                                  color: Color(0xff66C23D),
+                                                  borderRadius:
+                                                      const BorderRadius.all(
+                                                    Radius.circular(16.0),
+                                                  ),
+                                                  boxShadow: <BoxShadow>[
+                                                    BoxShadow(
+                                                        color:
+                                                            Color(0xff66C23D),
+                                                        offset: const Offset(
+                                                            1.1, 1.1),
+                                                        blurRadius: 10.0),
+                                                  ],
                                                 ),
-                                                boxShadow: <BoxShadow>[
-                                                  BoxShadow(
-                                                      color: Color(0xff66C23D),
-                                                      offset: const Offset(
-                                                          1.1, 1.1),
-                                                      blurRadius: 10.0),
-                                                ],
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  'Join Course',
-                                                  textAlign: TextAlign.left,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize: 18,
-                                                    letterSpacing: 0.0,
-                                                    color: DesignCourseAppTheme
-                                                        .nearlyWhite,
+                                                child: Center(
+                                                  child: Text(
+                                                    'Join Course',
+                                                    textAlign: TextAlign.left,
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 18,
+                                                      letterSpacing: 0.0,
+                                                      color:
+                                                          DesignCourseAppTheme
+                                                              .nearlyWhite,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                          )
-                                        ],
+                                            )
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -477,6 +488,33 @@ class _CourseInfoScreenState extends State<CourseInfoScreen>
       ),
     );
   }
+
+/////////// Join Course Api////////
+  List<JoinCourseResponse> tempJoinCourse = [];
+
+  Future<void> joinCourse(BuildContext context, course_id) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var userId = prefs.getInt('isUserId');
+
+    var url = baseUrl +
+        ApiEndPoints().joinCourse +
+        "&user_id=$userId&course_id=$course_id";
+    var response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      List<JoinCourseResponse> joinCourseResponse = [];
+      joinCourseResponse
+          .add(JoinCourseResponse.fromjson(jsonDecode(response.body)));
+
+      JoinCourseResponse joinResponse = joinCourseResponse[0];
+
+      await customDialog(context,
+          message: joinResponse.message ?? "-",
+          title: joinResponse.error_code!);
+
+      Navigator.pop(context);
+    }
+  }
 }
 
 /////////// Single Course Details Api////////
@@ -485,6 +523,7 @@ List<SingleCourse> tempSingleCourse = [];
 
 Future<void> singleCourseDetail(BuildContext context, id) async {
   List<SingleCourseDetailResponse>? singleCourseDetailResponse;
+
   var url = baseUrl + ApiEndPoints().singleCourseDetail + "&course_id=$id";
   var response = await http.get(Uri.parse(url));
   if (response.statusCode == 200) {
@@ -575,5 +614,24 @@ class SingleCourse {
     course_featured_image_link = json['course_featured_image_link'];
     course_link = json['course_link'];
     course_lesson_link = json['course_lesson_link'];
+  }
+}
+
+// Join Group API
+class JoinCourseResponse {
+  bool? status;
+  String? error_code;
+  String? message;
+
+  JoinCourseResponse({
+    this.status,
+    this.error_code,
+    this.message,
+  });
+
+  JoinCourseResponse.fromjson(Map<String, dynamic> json) {
+    status = json['status'];
+    error_code = json['error_code'];
+    message = json['message'];
   }
 }

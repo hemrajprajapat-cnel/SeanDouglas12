@@ -57,7 +57,9 @@ dependencies:
     video_player: ^2.1.1
     # video_player: ^0.10.1
     # dropdown_button2: ^1.7.2
-    # better_player: ^0.0.48
+    # better_player: ^0.0.48l.i
+    webview_flutter: ^2.0.10
+    flutter_webview_plugin: ^0.4.0
 
 dev_dependencies:
     flutter_test:

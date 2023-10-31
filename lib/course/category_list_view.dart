@@ -22,6 +22,8 @@ class _CategoryListViewState extends State<CategoryListView>
   void initState() {
     animationController = AnimationController(
         duration: const Duration(milliseconds: 2000), vsync: this);
+
+    print("callBack");
     getPreviusCourseList(context);
     super.initState();
   }
@@ -52,7 +54,6 @@ class _CategoryListViewState extends State<CategoryListView>
     var user_id = prefs.getInt('isUserId');
     var response = await http.get(Uri.parse("$url&user_id=$user_id"));
 
-    print(response.body);
     setState(() {
       isLoading = false;
     });
@@ -120,7 +121,7 @@ class _CategoryListViewState extends State<CategoryListView>
                               courseList: tempCoursesListData[index],
                               animation: animation,
                               animationController: animationController,
-                              callback: widget.callBack,
+                              // callback: widget.callBack,
                             );
                           },
                         );
@@ -133,15 +134,15 @@ class _CategoryListViewState extends State<CategoryListView>
 }
 
 class CategoryView extends StatelessWidget {
-  CategoryView(
-      {Key? key,
-      this.courseList,
-      this.animationController,
-      this.animation,
-      this.callback})
-      : super(key: key);
+  CategoryView({
+    Key? key,
+    this.courseList,
+    this.animationController,
+    this.animation,
+    // this.callback
+  }) : super(key: key);
 
-  final VoidCallback? callback;
+  // final VoidCallback? callback;
   final courseList;
   final AnimationController? animationController;
   final Animation<double>? animation;
@@ -159,7 +160,7 @@ class CategoryView extends StatelessWidget {
                   100 * (1.0 - animation!.value), 0.0, 0.0),
               child: InkWell(
                 splashColor: Colors.transparent,
-                onTap: callback,
+                // onTap: callback,
                 child: GestureDetector(
                   onTap: () async {
                     await singleCourseDetail(context, courseList!.id);

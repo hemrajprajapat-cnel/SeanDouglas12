@@ -22,8 +22,8 @@ class CourseListResponse {
 }
 
 class ListCourse {
-  String? id;
-  String? post_author;
+  int? id;
+  int? post_author;
   String? post_author_name;
   String? post_title;
   String? post_excerpt;

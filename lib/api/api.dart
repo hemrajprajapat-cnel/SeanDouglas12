@@ -22,13 +22,13 @@ class ApiEndPoints {
   //// Course Screens ////
   final String courseList = '/v1/mobile?task=get_course_list_api';
   final String singleCourseDetail = '/v1/mobile?task=single_course_detail';
+  final String joinCourse = '/v1/mobile?task=join_in_course';
 
   //// Library  Screens /////
   final String libraryGetList = '/v1/mobile?task=library_post_list';
 
   //// Groups  Screens /////
-  final String getGroupList = '/v1/mobile';
-  final String getGroupList2 = '/v1/mobile';
+  final String getGroupList = '/v1/mobile?task=my_group_list';
   final String getGroupDetails = '/v1/mobile?task=signle_group_details';
   final String joinGroup = '/v1/mobile?task=join_group_by_id';
   final String discussionsPostList =
@@ -36,6 +36,7 @@ class ApiEndPoints {
   final String add_dicuscsions = '/v1/mobile?task=add_dicuscsions';
   final String feedGroupGetList =
       '/v1/mobile?task=feed_and_discussions_group_list';
+  final String add_feed_in_group = '/v1/mobile?task=add_feed_in_group';
   final String changegroupimage = '/v1/mobile?task=change_group_image';
 
   //// Event  Screens /////

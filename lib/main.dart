@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'navigation_home_screen.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import './login/login.dart';
-import './login/register.dart';
+import './login/login.dart';  
+import './login/register.dart'; 
 import './splash_screen.dart';
 import './login/forgot_password.dart';
 import './agreement/privacy_policy.dart';
 import 'agreement/termsofservice.dart';
-// import 'activity/addpost.dart';
+// import 'activity/addpost.dart'; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
         textTheme: AppTheme.textTheme,
         platform: TargetPlatform.iOS,
       ),
-      home: SplashScreen(),
+      home: SplashScreen(), 
       routes: {
         'register': (context) => MyRegister(),
         'login': (context) => MyLogin(),

@@ -7,6 +7,7 @@ import 'package:best_flutter_ui_templates/api/api.dart';
 import 'package:best_flutter_ui_templates/comman/custome_dialog.dart';
 import 'package:best_flutter_ui_templates/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sticky_headers/sticky_headers/widget.dart';
 import '../comman/design_course_app_theme.dart';
@@ -101,6 +102,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
           setState(() {
             tempActivityList = activityList;
           });
+
         }
       }
     } else {
@@ -130,6 +132,14 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
     setState(() {
       activityPostList(context, 1);
     });
+  }
+
+  void onChoiceChipValueChanged(int newValue) {
+    setState(() {
+      choiceChipValue = newValue;
+    });
+    tempActivityList = [];
+    activityPostList(context, 1);
   }
 
   @override
@@ -276,46 +286,36 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                                               ),
                                             ],
                                           ),
-                                          Padding(
-                                            padding: EdgeInsets.only(
-                                              top: 10,
-                                              left: 10,
-                                              right: 10,
-                                            ),
-                                            child: Align(
-                                                alignment: Alignment.topLeft,
-                                                child: AutoSizeText(
-                                                  content,
-                                                  textAlign: TextAlign.start,
-                                                  minFontSize: 15,
-                                                  maxLines: 5,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  style: TextStyle(
-                                                    fontWeight: FontWeight.w500,
-                                                    height: 1.1,
-                                                    color: Color(0xff073278),
-                                                  ),
-                                                )),
-                                          ),
                                           Container(
                                             width: double.infinity,
-                                            height: 150,
+                                            // height: 150,
                                             padding: EdgeInsets.symmetric(
                                               horizontal: 12,
-                                              vertical: 0,
+                                              vertical: 10,
                                             ),
-                                            child: Image(
-                                              image: NetworkImage(
-                                                "${activityList.image_link}",
-                                              ),
-                                              fit: BoxFit.fill,
+                                            child: Column(
+                                              children: [
+                                                Html(
+                                                  data: content,
+                                                ),
+                                                activityList.image_link != null ? Image(                                               
+                                                  image: NetworkImage(
+                                                    "${activityList.image_link}",
+                                                  ),
+                                                  fit: BoxFit.fill,
+                                                ) : Image(
+                                                  image: AssetImage('assets/images/images.png'),
+                                                  width: double.infinity,
+                                                  height: 180,
+                                                  fit: BoxFit.fill,
+                                                ),
+                                              ],
                                             ),
                                           ),
                                           Row(
                                             children: [
                                               IconButton(
-                                                onPressed: () async {
+                                                onPressed: () async {                                                 
                                                   if (_isLiked) {
                                                     setState(() {
                                                       _isLiked = false;
@@ -561,10 +561,9 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                   selected: choiceChipValue == 1,
                   selectedColor: Color(0xff073278),
                   backgroundColor: Colors.transparent,
-                  onSelected: (bool selected) {
+                  onSelected: (bool selected) {                   
                     setState(() {
-                      choiceChipValue = selected ? 1 : null;
-                      activityPostList(context, page);
+                      onChoiceChipValueChanged(1);
                     });
                   },
                 ),
@@ -590,8 +589,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                   backgroundColor: Colors.transparent,
                   onSelected: (bool selected) {
                     setState(() {
-                      choiceChipValue = selected ? 2 : null;
-                      activityPostList(context, page);
+                      onChoiceChipValueChanged(2);
                     });
                   },
                 ),
@@ -617,8 +615,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                   backgroundColor: Colors.transparent,
                   onSelected: (bool selected) {
                     setState(() {
-                      choiceChipValue = selected ? 3 : null;
-                      activityPostList(context, page);
+                     onChoiceChipValueChanged(3);
                     });
                   },
                 ),
@@ -644,8 +641,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                   backgroundColor: Colors.transparent,
                   onSelected: (bool selected) {
                     setState(() {
-                      choiceChipValue = selected ? 4 : null;
-                      activityPostList(context, page);
+                      onChoiceChipValueChanged(4);
                     });
                   },
                 ),
@@ -671,8 +667,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                   backgroundColor: Colors.transparent,
                   onSelected: (bool selected) {
                     setState(() {
-                      choiceChipValue = selected ? 5 : null;
-                      activityPostList(context, page);
+                      onChoiceChipValueChanged(5);
                     });
                   },
                 ),
@@ -699,8 +694,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
                   onSelected: (bool selected) {
                     setState(
                       () {
-                        choiceChipValue = selected ? 6 : null;
-                        activityPostList(context, page);
+                        onChoiceChipValueChanged(6);
                       },
                     );
                   },
@@ -768,6 +762,7 @@ class _DesignCourseHomeScreenState extends State<DesignCourseHomeScreen>
     var userId = prefs.getInt('isUserId');
 
     var content = _isLiked == true ? "Unlike" : "Like";
+    
     Map<String, String> params = {
       'activity_id': id.toString(),
       'content': content,

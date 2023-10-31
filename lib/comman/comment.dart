@@ -54,7 +54,7 @@ class _Comment extends State<Comment> {
       widget.id,
       widget.CommentType,
     );
-    setState(() {});
+    // setState(() {});
   }
 
   final formKey = GlobalKey<FormState>();
@@ -63,10 +63,9 @@ class _Comment extends State<Comment> {
   Widget commentChild() {
     return RefreshIndicator(
       onRefresh: () async {
-        ActivityCommentPostList(
-            context, commentController.text, widget.id, widget.CommentType);
+        activityCommentGetList(context, widget.id, widget.CommentType);
       },
-      child: ListView(
+      child: !isLoading ? ListView(
         children: [
           for (var i = 0; i < tempActivityComment.length; i++)
             Padding(
@@ -98,7 +97,13 @@ class _Comment extends State<Comment> {
               ),
             )
         ],
-      ),
+      )
+      :  Padding(
+          padding: EdgeInsets.only(bottom: 50),
+          child: Center(
+            child: CircularProgressIndicator(),
+          ),
+        ),
     );
   }
 
@@ -108,7 +113,7 @@ class _Comment extends State<Comment> {
       body: Container(
         child: CommentBox(
           // userImage:
-          //     'http://lh3.googleusercontent.com/a-/AOh14GjRHcaendrf6gU5fPIVd8GIl1OgblrMMvGUoCBj4g=s400',
+          //     'http://lh3.googleusercontent.com/a-/AOh14GjRHcaendrf6gU5fPIVd8GIl1OgblrMMvGUoCBj4g=s400',          
           child: commentChild(),
           labelText: 'Write a comment...',
           withBorder: false,
@@ -126,8 +131,12 @@ class _Comment extends State<Comment> {
               highlightColor: Colors.white,
               color: Colors.amber,
               onPressed: (() {
-                ActivityCommentPostList(context, commentController.text,
-                    widget.id, widget.CommentType);
+                if(commentController.text != "") {                
+                  ActivityCommentPostList(context, commentController.text,
+                      widget.id, widget.CommentType);
+
+                  commentController.clear();                              
+                }
               })),
         ),
       ),
@@ -138,8 +147,12 @@ class _Comment extends State<Comment> {
   List<ActivityComment> tempActivityComment = [];
 
   void activityCommentGetList(BuildContext context, id, CommentType) async {
-    List<ActivityCommentGetListResponse> activityCommentGetListResponse;
-    isLoading = true;
+
+    setState(() {
+      isLoading = true;
+    });
+
+    List<ActivityCommentGetListResponse> activityCommentGetListResponse;   
     var url = baseUrl +
         ApiEndPoints().activityCommentGetList +
         "&activity_id=$id&comment_type=$CommentType";
@@ -156,8 +169,7 @@ class _Comment extends State<Comment> {
       ActivityCommentGetListResponse activityCommentGetListRes =
           activityCommentGetListResponse[0];
 
-      if (activityCommentGetListRes.status == 'true' &&
-          activityCommentGetListRes.error_code == '0') {
+      if (activityCommentGetListRes.status == 'true') {
         if (activityCommentGetListRes.activityComment != null) {
           var data = activityCommentGetListRes.activityComment;
 
@@ -165,8 +177,10 @@ class _Comment extends State<Comment> {
             activityComment.add(e);
           }
           setState(() {
-            tempActivityComment = activityComment;
+            tempActivityComment = activityComment;  
+            isLoading = false;          
           });
+          
         }
       }
     } else {
@@ -176,6 +190,11 @@ class _Comment extends State<Comment> {
 
   void ActivityCommentPostList(
       BuildContext context, commentController, id, CommentType) async {
+
+    setState(() {
+      isLoading = true;
+    });       
+
     List<ActivityCommentPostResponse> activityCommentPostResponse;
 
     var url = baseUrl + ApiEndPoints().activityCommentPostList;
@@ -184,7 +203,7 @@ class _Comment extends State<Comment> {
     var userId = prefs.getInt('isUserId');
     Map<String, String> qParams = {
       'task': 'add_comments',
-      'activity_id': id,
+      'activity_id': id.toString(),
       'message': commentController.toString(),
       'user_id': userId.toString(),
     };
@@ -193,12 +212,7 @@ class _Comment extends State<Comment> {
 
     if (response.statusCode == 200) {
       setState(() {
-        Navigator.pushReplacement<void, void>(
-          context,
-          MaterialPageRoute<void>(
-            builder: (BuildContext context) => Postcomment(id, CommentType),
-          ),
-        );
+        activityCommentGetList(context, id, CommentType);
       });
     }
   }
@@ -206,7 +220,7 @@ class _Comment extends State<Comment> {
 
 class ActivityCommentGetListResponse {
   String? status;
-  String? error_code;
+  String? success_code;
   String? message;
   int? total_comment;
 
@@ -214,7 +228,7 @@ class ActivityCommentGetListResponse {
 
   ActivityCommentGetListResponse({
     this.status,
-    this.error_code,
+    this.success_code,
     this.message,
     this.total_comment,
     this.activityComment,
@@ -223,7 +237,7 @@ class ActivityCommentGetListResponse {
   ActivityCommentGetListResponse.fromJson(Map<String, dynamic> json) {
     activityComment = <ActivityComment>[];
     status = json['status'].toString();
-    error_code = json['error_code'];
+    success_code = json['success_code'];
     message = json['message'];
     if (json['data']['total_comment'] != 0) {
       total_comment = json['data']['total_comment'];
@@ -238,7 +252,7 @@ class ActivityCommentGetListResponse {
 }
 
 class ActivityComment {
-  String? comment_id;
+  int? comment_id;
   String? comment_type;
   String? comment_owner_name;
   String? comment_owner_image_link;
@@ -251,7 +265,8 @@ class ActivityComment {
       this.comment_owner_name,
       this.comment_owner_image_link,
       this.comment_content,
-      this.comment_primary_link});
+      this.comment_primary_link,
+      });
 
   ActivityComment.fromJson(Map<String, dynamic> json) {
     comment_id = json['comment_id'];

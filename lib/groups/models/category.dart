@@ -343,50 +343,57 @@ class Category {
 class GroupListResponse {
   String? status;
   String? error_code;
-  String? message;
   List<ListGetGroup>? listGetGroup;
 
   GroupListResponse({
     this.status,
     this.error_code,
     this.listGetGroup,
-    this.message,
   });
 
   GroupListResponse.fromjson(Map<String, dynamic> json) {
     listGetGroup = <ListGetGroup>[];
     status = json['status'];
     error_code = json['error_code'];
-    message = json['message'];
-
+    
     listGetGroup =
         (json['data'] as List).map((e) => ListGetGroup.fromjson(e)).toList();
+
   }
 }
 
 class ListGetGroup {
-  String? Id;
-  String? Type;
-  String? Title;
-  String? Status;
-  String? Time;
-  String? Image_link;
+  String? id;
+  String? type;
+  String? title;
+  String? status;
+  String? time;
+  String? image_link;
+  String? author_image;
+  String? user_type;
+  String? user_name;
 
   ListGetGroup({
-    this.Id,
-    this.Type,
-    this.Title,
-    this.Status,
-    this.Time,
-    this.Image_link,
+    this.id,
+    this.type,
+    this.title,
+    this.status,
+    this.time,
+    this.image_link,
+    this.author_image,
+    this.user_type,
+    this.user_name
   });
 
   ListGetGroup.fromjson(Map<String, dynamic> json) {
-    Id = json['id'];
-    Type = json['type'];
-    Title = json['Title'];
-    Status = json['Status'];
-    Time = json['Time'];
-    Image_link = json['Image_link'];
+    id = json['id'];
+    type = json['type'];
+    title = json['Title'];
+    status = json['Status'];
+    time = json['Time'];
+    image_link = json['Image_link'];
+    author_image = json['author_image'];
+    user_type = json['User_type'];
+    user_name = json['user_name'];
   }
 }
